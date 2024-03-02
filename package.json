@@ -1,0 +1,42 @@
+{
+  "name": "jake-lunch",
+  "version": "1.0.0",
+  "description": "",
+  "exports": "./build/app.js",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "install": "playwright install",
+    "build": "tsc",
+    "css": "tailwindcss --watch -i src/tailwind.css -o public/style.css",
+    "start": "tsx src/app.ts",
+    "start:watch": "tsx watch src/app.ts | pino-pretty -i module -o \"[{module}] {msg}\"",
+    "dev": "concurrently \"npm:css\" \"npm:start:watch\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@ladjs/graceful": "3.2.2",
+    "croner": "8.0.1",
+    "date-fns": "3.3.1",
+    "express": "4.18.2",
+    "playwright": "1.41.2",
+    "pug": "3.0.2",
+    "pino": "8.18.0",
+    "remeda": "1.46.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node20": "20.1.2",
+    "@types/express": "4.17.21",
+    "@types/node": "20.11.20",
+    "@types/pug": "2.0.10",
+    "concurrently": "8.2.2",
+    "pino-pretty": "10.3.1",
+    "tailwindcss": "3.4.1",
+    "typescript": "5.3.3",
+    "tsx": "4.7.1"
+  }
+}
