@@ -5,7 +5,7 @@ WORKDIR /home/node/build
 COPY package.json .
 COPY package-lock.json .
 
-RUN npm ci
+RUN PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci
 
 COPY tsconfig.json .
 COPY src ./src
@@ -15,9 +15,6 @@ COPY tailwind.config.js .
 RUN npm run build
 
 FROM node:20
-FROM mcr.microsoft.com/playwright:jammy
-
-# RUN apt-get update && apt-get -y install libnss3 libatk-bridge2.0-0 libdrm-dev libxkbcommon-dev libgbm-dev libasound-dev libatspi2.0-0 libxshmfence-dev
 
 ENV NODE_ENV production
 
@@ -26,7 +23,8 @@ WORKDIR /home/node/app
 COPY --from=builder /home/node/build/package.json .
 COPY --from=builder /home/node/build/package-lock.json .
 
-RUN npm ci
+RUN PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci
+RUN npx playwright install --with-deps chromium
 
 COPY --from=builder /home/node/build/build .
 COPY --from=builder /home/node/build/public ./public
