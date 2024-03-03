@@ -1,7 +1,13 @@
 import { addDays, format, getWeek, startOfWeek } from 'date-fns'
 import { Menu, MenuItem } from './menu-service.js'
+import { fileURLToPath } from 'node:url'
+import path from 'node:path'
 
 const WEEKDAYS = ['Maanantai', 'Tiistai', 'Keskiviikko', 'Torstai', 'Perjantai']
+
+export const filename = (metaUrl: string) => fileURLToPath(metaUrl)
+
+export const dirname = (filename: string) => path.dirname(filename)
 
 export const generateTemplateVars = (menus: Menu[]) => {
     const currentWeek = getWeek(new Date(), { weekStartsOn: 1 })

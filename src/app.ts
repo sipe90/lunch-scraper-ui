@@ -11,17 +11,15 @@ import Scraper from './scrape-service.js'
 import scrapeJob from './scrape-job.js'
 import { formatISO } from 'date-fns'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-const port = 3000
+const HOST = process.env.HOST || 'localhost'
+const PORT = parseInt(process.env.PORT || '8080', 10)
 
 const log = logger()
 const app = express()
 
 app.set('view engine', 'pug')
-app.set('views', path.join(__dirname, '/views'))
-app.use(express.static(path.join(__dirname, '..', 'public')))
+app.set('views', 'views')
+app.use(express.static('public'))
 
 const scrapeCron = new Cron('0 * * * *')
 const scraper = await Scraper.getInstance()
@@ -47,8 +45,8 @@ app.get('/', (req, res) => {
     res.render('index', data)
 })
 
-const server = app.listen(3000, () => {
-    log.info('Server listening at port %d', port)
+const server = app.listen(PORT, HOST, () => {
+    log.info('Server listening at port %s:%d', HOST, PORT)
 })
 
 const graceful = new (Graceful as unknown as typeof Graceful.default)({
