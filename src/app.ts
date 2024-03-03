@@ -37,7 +37,7 @@ scraper.scrapeMenus(true).then((menus) => {
     process.exit(1)
 })
 
-app.get('/', (_, res) => res.redirect('/week'))
+app.get('/', (_, res) => res.redirect('week'))
 
 app.get('/week', (_, res) => {
     const menus = getMenus()
