@@ -1,5 +1,3 @@
-import path from 'path'
-import { fileURLToPath } from 'url'
 import express from 'express'
 import Graceful from '@ladjs/graceful'
 import { Cron } from 'croner'
@@ -39,14 +37,16 @@ scraper.scrapeMenus(true).then((menus) => {
     process.exit(1)
 })
 
-app.get('/', (req, res) => {
+app.get('/', (_, res) => res.redirect('/week'))
+
+app.get('/week', (_, res) => {
     const menus = getMenus()
     const data = generateTemplateVars(menus || [])
-    res.render('index', data)
+    res.render('week', data)
 })
 
 const server = app.listen(PORT, HOST, () => {
-    log.info('Server listening at port %s:%d', HOST, PORT)
+    log.info('Server listening at %s:%d', HOST, PORT)
 })
 
 const graceful = new (Graceful as unknown as typeof Graceful.default)({
