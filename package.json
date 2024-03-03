@@ -15,7 +15,8 @@
     "start": "tsx src/app.ts",
     "start:watch": "tsx watch src/app.ts | pino-pretty -i module -o \"[{module}] {msg}\"",
     "dev": "concurrently \"npm:css:watch\" \"npm:start:watch\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postversion": "git push && git push --tags"
   },
   "license": "MIT",
   "dependencies": {
