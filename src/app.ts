@@ -17,7 +17,8 @@ const app = express()
 
 app.set('view engine', 'pug')
 app.set('views', 'views')
-app.use(express.static('public'))
+
+app.use('/lunch', express.static('public'))
 
 const scrapeCron = new Cron('0 * * * *')
 const scraper = await Scraper.getInstance()
@@ -37,9 +38,11 @@ scraper.scrapeMenus(true).then((menus) => {
     process.exit(1)
 })
 
-app.get('/', (_, res) => res.redirect('week'))
+app.get('/', (_, res) => res.redirect('/lunch/week'))
 
-app.get('/week', (_, res) => {
+app.get('/lunch', (_, res) => res.redirect('/lunch/week'))
+
+app.get('/lunch/week', (_, res) => {
     const menus = getMenus()
     const data = generateTemplateVars(menus || [])
     res.render('week', data)
