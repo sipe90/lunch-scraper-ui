@@ -26,7 +26,7 @@ export const clampWeekMenu = (weekMenu?: MenuItem[][]) => {
         return weekMenu.concat(...R.range(0, 5 - weekMenu.length).map(() => []))
     }
     if (weekMenu.length > 5) {
-        return weekMenu.slice(0, 4)
+        return weekMenu.slice(0, 5)
     }
     return weekMenu
 }
