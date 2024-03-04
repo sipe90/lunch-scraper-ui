@@ -1,6 +1,6 @@
 {
   "name": "jake-lunch",
-  "version": "0.2.5",
+  "version": "0.3.0",
   "private": true,
   "exports": "./build/app.js",
   "type": "module",
