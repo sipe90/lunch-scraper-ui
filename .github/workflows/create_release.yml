@@ -1,5 +1,9 @@
 name: Create release
 
+permissions:
+  contents: read
+  actions: write
+
 on:
   workflow_dispatch:
     inputs:
@@ -47,3 +51,6 @@ jobs:
       - name: Create custom release
         if:  ${{ github.event.inputs.type == 'custom' }} 
         run: npm version --allow-same-version ${{ github.event.inputs.version }} -m "[npm] Release %s"
+      - uses: rhosys/github-action-rebuild-pull-requests@v1.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
