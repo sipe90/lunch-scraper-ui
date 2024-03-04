@@ -63,13 +63,13 @@ class Scraper {
         try {
             weekMenu = await venue.scrape(page, venue.url)
         } catch (err) {
-            log.error('Failed to scrape %s', venue.id)
+            log.error(err, 'Failed to scrape %s', venue.id)
         } finally {
             log.debug('Closing browser page after scraping %s', venue.id)
             await page.close()
         }
 
-        return { venue: venue.name, url: venue.url, weekMenu }
+        return { venue: venue.name, url: venue.url, weekly: venue.weekly, weekMenu }
     }
 }
 

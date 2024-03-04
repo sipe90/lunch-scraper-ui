@@ -3,6 +3,7 @@ import * as R from 'remeda'
 export interface Menu {
     venue: string
     url: string
+    weekly: boolean
     weekMenu: MenuItem[][]
 }
 

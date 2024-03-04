@@ -16,7 +16,7 @@ html(lang='fi')
             if menu.weekMenu.length
               div(class='mt-2 flex flex-wrap')
                 - var i = 0;
-                while i < 5
+                while !menu.weekly && i < 5
                   - var weekday = weekDates[i];
                   - var dayMenu = menu.weekMenu[i];
                   - i++;
@@ -37,7 +37,7 @@ html(lang='fi')
                 if (menu.weekMenu.length >= 6)
                   - var dayMenu = menu.weekMenu[5];
                   div(class='py-2 px-4 flex-[1_1_500px]')
-                    h3(class='text-2xl') Koko viikon ateriat
+                    h3(class='text-2xl') Koko viikon annokset
                     if dayMenu.length
                       div(class='mt-1 flex flex-col')
                         ul(class='list-disc')
