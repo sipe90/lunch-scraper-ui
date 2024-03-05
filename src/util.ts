@@ -1,32 +1,49 @@
-import { addDays, format, getWeek, startOfWeek } from 'date-fns'
-import { Menu, MenuItem } from './menu-service.js'
+import * as dateFns from 'date-fns'
+import { fi } from "date-fns/locale"
+import { MenuItem, WeekMenuArray, Weekday } from './menu-service.js'
 
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import * as R from 'remeda'
 
-const WEEKDAYS = ['Maanantai', 'Tiistai', 'Keskiviikko', 'Torstai', 'Perjantai']
-
 export const filename = (metaUrl: string) => fileURLToPath(metaUrl)
 
 export const dirname = (filename: string) => path.dirname(filename)
 
-export const generateTemplateVars = (menus: Menu[]) => {
-    const currentWeek = getWeek(new Date(), { weekStartsOn: 1 })
-    const weekDates = WEEKDAYS.map((day, i) => `${day} ${format(addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), i), "d.M")}`)
-
-    return { menus, weekDates, currentWeek }
+export const getYearAndWeek = (date: Date = new Date()): [number, number] => {
+    return [
+        dateFns.getISOWeekYear(date),
+        getWeek(date)
+    ]
 }
 
-export const clampWeekMenu = (weekMenu?: MenuItem[][]) => {
+export const getWeek = (date: Date = new Date()) => {
+    return dateFns.getISOWeek(date)
+}
+
+export const getWeekdayDate = (year: number, week: number, weekday: Weekday): Date => {
+    const weekDate = dateFns.parse(`${year.toString(10)} ${week.toString(10)}`, 'R I', new Date(), { weekStartsOn: 1, locale: fi })
+    const weekDayDate = dateFns.setISODay(weekDate, weekday + 1)
+
+    return weekDayDate
+}
+
+export const getWeekdayDateString = (year: number, week: number, weekday: Weekday): string => {
+    const weekDayDate = getWeekdayDate(year, week, weekday)
+    const dateStr = dateFns.format(weekDayDate, 'cccc d.M', { weekStartsOn: 1, locale: fi })
+
+    return dateStr.charAt(0).toLocaleUpperCase() + dateStr.slice(1)
+}
+
+export const clampWeekMenu = (weekMenu?: MenuItem[][]): WeekMenuArray => {
     if (!weekMenu) {
-        return R.range(0, 5).map(() => [])
+        return [[], [], [], [], []]
     }
     if (weekMenu.length < 5) {
-        return weekMenu.concat(...R.range(0, 5 - weekMenu.length).map(() => []))
+        return weekMenu.concat(...R.range(0, 5 - weekMenu.length).map(() => [])) as WeekMenuArray
     }
     if (weekMenu.length > 5) {
-        return weekMenu.slice(0, 5)
+        return weekMenu.slice(0, 5) as WeekMenuArray
     }
-    return weekMenu
+    return weekMenu as WeekMenuArray
 }

@@ -3,8 +3,7 @@ import Graceful from '@ladjs/graceful'
 import { Cron } from 'croner'
 
 import logger from './logger.js'
-import { getMenus, saveMenus } from './menu-service.js'
-import { generateTemplateVars } from './util.js'
+import { getWeekMenus, saveMenus } from './menu-service.js'
 import Scraper from './scrape-service.js'
 import scrapeJob from './scrape-job.js'
 import { formatISO } from 'date-fns'
@@ -43,9 +42,8 @@ app.get('/', (_, res) => res.redirect('/lunch/week'))
 app.get('/lunch', (_, res) => res.redirect('/lunch/week'))
 
 app.get('/lunch/week', (_, res) => {
-    const menus = getMenus()
-    const data = generateTemplateVars(menus || [])
-    res.render('week', data)
+    const menus = getWeekMenus()
+    res.render('week', menus)
 })
 
 const server = app.listen(PORT, HOST, () => {

@@ -1,25 +1,14 @@
 import path from 'path'
 import { mkdirSync, statSync } from 'fs'
 import { readFile, writeFile } from 'fs/promises'
-import * as R from 'remeda'
-import { format } from 'date-fns'
 import { Menu } from './menu-service.js'
 
 const storageFolder = './data'
 const fileExt = '.json'
 
-export type VendorMenus = Record<string, Menu | null>
-
-export const loadMenus = async (date: Date, venues: string[]): Promise<VendorMenus> => {
-    const menus = await Promise.all(venues.map((venue) => loadMenu(date, venue)))
-    const vendorMenus = R.mapToObj.indexed(venues, (venue, i) => [venue, menus[i]])
-
-    return vendorMenus
-}
-
-export const loadMenu = async (date: Date, venue: string): Promise<Menu | null> => {
+export const loadMenu = async (year: number, week: number, venue: string): Promise<Menu | null> => {
     checkFolderExists(storageFolder)
-    const filePath = getFilePath(date, venue)
+    const filePath = getFilePath(year, week, venue)
 
     if (statSync(filePath, { throwIfNoEntry: false })?.isFile()) {
         const fileStr = await readFile(filePath, { encoding: 'utf8' })
@@ -29,9 +18,9 @@ export const loadMenu = async (date: Date, venue: string): Promise<Menu | null> 
     return null
 }
 
-export const saveMenu = async (date: Date, venue: string, menu: Menu): Promise<void> => {
+export const saveMenu = async (year: number, week: number, venue: string, menu: Menu): Promise<void> => {
     checkFolderExists(storageFolder)
-    const filePath = getFilePath(date, venue)
+    const filePath = getFilePath(year, week, venue)
 
     const menuStr = JSON.stringify(menu, null, 2)
 
@@ -45,8 +34,8 @@ const checkFolderExists = (path: string) => {
     }
 }
 
-const getFilePath = (date: Date, venue: string) => {
-    const prefix = format(date, 'yyyy_II', { weekStartsOn: 1 })
+const getFilePath = (year: number, week: number, venue: string) => {
+    const prefix = `${year.toString(10)}_${week.toString(10).padStart(2, '0')}`
     const filePath = path.join(storageFolder, prefix + '_' + venue + fileExt)
 
     return filePath

@@ -1,10 +1,11 @@
 import { Browser, Page, chromium } from 'playwright'
 import scrapers, { Venue } from './scrapers/index.js'
 import { loadMenu, saveMenu } from './storage-service.js'
-import { Menu, MenuItem } from './menu-service.js'
+import { MenuItem, Menu, Menus, WeekMenuArray } from './menu-service.js'
 import logger from './logger.js'
+import { getYearAndWeek } from './util.js'
 
-export type ScrapeFunction = (page: Page, url: string) => Promise<MenuItem[][]>
+export type ScrapeFunction = (page: Page, url: string) => Promise<[WeekMenuArray, MenuItem[]]>
 
 const log = logger('scrape-service')
 
@@ -28,9 +29,15 @@ class Scraper {
         return this.instance
     }
 
-    public scrapeMenus = async (force: boolean = false): Promise<Menu[]> => {
+    public scrapeMenus = async (force: boolean = false): Promise<Menus> => {
         log.info('Scraping all menus (force=%s)', force)
-        return Promise.all(scrapers.map((venue) => this.scrapeMenu(venue, force)))
+        const [year, week] = getYearAndWeek()
+
+        return {
+            year,
+            week,
+            vendorMenus: await Promise.all(scrapers.map((venue) => this.scrapeMenu(year, week, venue, force)))
+        }
     }
 
     public close = async (): Promise<void> => {
@@ -38,18 +45,16 @@ class Scraper {
         await this.browser.close()
     }
 
-    private scrapeMenu = async (venue: Venue, force: boolean): Promise<Menu> => {
-        const now = new Date()
-
+    private scrapeMenu = async (year: number, week: number, venue: Venue, force: boolean): Promise<Menu> => {
         if (!force) {
-            const menu = await loadMenu(now, venue.id)
+            const menu = await loadMenu(year, week, venue.id)
             if (menu != null) {
                 return menu
             }
         }
 
         const scrapedMenu = await this.doScrape(venue)
-        await saveMenu(now, venue.id, scrapedMenu)
+        await saveMenu(year, week, venue.id, scrapedMenu)
         return scrapedMenu
     }
 
@@ -59,9 +64,11 @@ class Scraper {
         page.setDefaultTimeout(2000)
         page.setDefaultNavigationTimeout(10000)
 
-        let weekMenu: MenuItem[][] = []
+        let weekMenu: WeekMenuArray = [[], [], [], [], []]
+        let allWeekMenu: MenuItem[] = []
+
         try {
-            weekMenu = await venue.scrape(page, venue.url)
+            [weekMenu, allWeekMenu] = await venue.scraper(page, venue.url)
         } catch (err) {
             log.error(err, 'Failed to scrape %s', venue.id)
         } finally {
@@ -69,7 +76,7 @@ class Scraper {
             await page.close()
         }
 
-        return { venue: venue.name, url: venue.url, weekly: venue.weekly, weekMenu }
+        return { venue: venue.name, url: venue.url, weeklyOnly: venue.weeklyOnly, weekMenu, allWeekMenu }
     }
 }
 

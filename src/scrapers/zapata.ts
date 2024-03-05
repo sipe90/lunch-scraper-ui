@@ -18,7 +18,7 @@ const scrape: ScrapeFunction = async (page, url) => {
     const weekDayTableLocators = (await tableLocator.all()).filter((_, i) => i < 5)
     const allWeekTableLocator = tableLocator.nth(5)
 
-    let weekdayMenu: MenuItem[][] = await Promise.all(weekDayTableLocators.map(async (table) => {
+    const weekdayMenu: MenuItem[][] = await Promise.all(weekDayTableLocators.map(async (table) => {
         const itemLocators = await table.locator(':nth-child(n+2 of tr)')
             .filter({ hasNotText: 'PÄIVÄN PIZZA' })
             .all()
@@ -41,7 +41,6 @@ const scrape: ScrapeFunction = async (page, url) => {
 
     if (weekdayMenu.length != 5) {
         log.warn('Found an unexpected number of elements in weekday menu (%d != 5)', weekdayMenu.length)
-        weekdayMenu = clampWeekMenu(weekdayMenu)
     }
 
     const allWeekItemLocators = allWeekTableLocator.locator(':nth-child(n+2 of tr)').all()
@@ -73,7 +72,7 @@ const scrape: ScrapeFunction = async (page, url) => {
 
     allWeekItems = allWeekItems.concat({ name: pizzaName, price: pizzaPrice, description: pizzaDescription })
 
-    return weekdayMenu.concat([allWeekItems])
+    return [clampWeekMenu(weekdayMenu), allWeekItems]
 }
 
 export default scrape

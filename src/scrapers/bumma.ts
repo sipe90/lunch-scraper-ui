@@ -10,7 +10,7 @@ const scrape: ScrapeFunction = async (page, url) => {
     await page.goto(url)
 
     const menuSectionLocators = await page.locator('.menu-section').all()
-    let weekdayMenu: MenuItem[][] = await Promise.all(menuSectionLocators.map(async (menuSection) => {
+    const weekdayMenu: MenuItem[][] = await Promise.all(menuSectionLocators.map(async (menuSection) => {
 
         const menuItemLocator = await menuSection.locator('.menu-item').all()
         return Promise.all(menuItemLocator.map(async (menuItem) => {
@@ -28,10 +28,9 @@ const scrape: ScrapeFunction = async (page, url) => {
 
     if (weekdayMenu.length != 5) {
         log.warn('Found an unexpected number of elements in weekday menu (%d != 5)', weekdayMenu.length)
-        weekdayMenu = clampWeekMenu(weekdayMenu)
     }
 
-    return weekdayMenu
+    return [clampWeekMenu(weekdayMenu), []]
 }
 
 

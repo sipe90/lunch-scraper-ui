@@ -8,8 +8,6 @@ const scrape: ScrapeFunction = async (page, url) => {
     log.info('Navigating to %s', url)
     await page.goto(url)
 
-    const weekdayMenu = clampWeekMenu()
-
     const menuSectionLocator = page.locator('.menu-section').first()
     const menuItemLocator = await menuSectionLocator.locator(':nth-child(n+4 of .menu-item)').all()
     const allWeekItems = await Promise.all(menuItemLocator.map(async (menuItem) => {
@@ -24,7 +22,7 @@ const scrape: ScrapeFunction = async (page, url) => {
         return { name, price, description }
     }))
 
-    return weekdayMenu.concat([allWeekItems])
+    return [clampWeekMenu(), allWeekItems]
 }
 
 const parseNameAndPrice = (nameAndPrice: string) => {

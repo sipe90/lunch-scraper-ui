@@ -9,8 +9,8 @@ export interface Venue {
     id: string
     name: string
     url: string
-    weekly: boolean
-    scrape: ScrapeFunction
+    weeklyOnly: boolean
+    scraper: ScrapeFunction
 }
 
 const venues: Venue[] = [
@@ -18,29 +18,29 @@ const venues: Venue[] = [
         id: 'bistro',
         name: 'Bistro En Place',
         url: 'https://www.bistroenplace.fi',
-        weekly: true,
-        scrape: bistro
+        weeklyOnly: true,
+        scraper: bistro
     },
     {
         id: 'bumma',
         name: 'Bumma',
         url: 'https://www.bumma.fi/lounas',
-        weekly: false,
-        scrape: bumma
+        weeklyOnly: false,
+        scraper: bumma
     },
     {
         id: 'zapata',
         name: 'Cantina Viva Zapata',
         url: 'https://cantinazapata.com/lounas',
-        weekly: false,
-        scrape: zapata
+        weeklyOnly: false,
+        scraper: zapata
     },
     {
         id: 'huvila',
         name: 'Huvila',
         url: 'https://www.huvilassa.fi/lounas',
-        weekly: false,
-        scrape: huvila
+        weeklyOnly: false,
+        scraper: huvila
     }
 ]
 
