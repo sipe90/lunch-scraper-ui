@@ -17,7 +17,11 @@ export const getYearAndWeek = (date: Date = new Date()): [number, number] => {
     ]
 }
 
-export const getWeek = (date: Date = new Date()) => {
+export const getDayOfWeek = (date: Date = new Date()): Weekday => {
+    return dateFns.getISODay(date) - 1 as Weekday
+}
+
+export const getWeek = (date: Date = new Date()): number => {
     return dateFns.getISOWeek(date)
 }
 

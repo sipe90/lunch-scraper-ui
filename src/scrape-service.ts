@@ -5,7 +5,7 @@ import { MenuItem, Menu, Menus, WeekMenuArray } from './menu-service.js'
 import logger from './logger.js'
 import { getYearAndWeek } from './util.js'
 
-export type ScrapeFunction = (page: Page, url: string) => Promise<[WeekMenuArray, MenuItem[]]>
+export type ScrapeFunction = (page: Page, url: string) => Promise<[WeekMenuArray | null, MenuItem[] | null]>
 
 const log = logger('scrape-service')
 
@@ -64,8 +64,8 @@ class Scraper {
         page.setDefaultTimeout(2000)
         page.setDefaultNavigationTimeout(10000)
 
-        let weekMenu: WeekMenuArray = [[], [], [], [], []]
-        let allWeekMenu: MenuItem[] = []
+        let weekMenu: WeekMenuArray | null = null
+        let allWeekMenu: MenuItem[] | null = null
 
         try {
             [weekMenu, allWeekMenu] = await venue.scraper(page, venue.url)

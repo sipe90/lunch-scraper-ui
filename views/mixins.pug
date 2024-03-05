@@ -1,0 +1,16 @@
+mixin dayMenu(title, dayMenu)
+  div(class='py-2 px-4 flex-[1_1_500px]')
+    if (title)
+      h3(class='text-2xl')= title
+    if (dayMenu.length)
+      div(class='mt-1 flex flex-col')
+        ul(class='list-disc')
+          each item in dayMenu
+            li(class='mt-1') 
+              div
+                b= item.name
+                i(class='ml-1')= item.price
+              div
+                i= item.description
+    else
+      div(class='mt-1') Päivän ruokalista ei ole saatavilla

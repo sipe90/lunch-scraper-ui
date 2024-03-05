@@ -22,7 +22,7 @@ const scrape: ScrapeFunction = async (page, url) => {
         return { name, price, description }
     }))
 
-    return [clampWeekMenu(), allWeekItems]
+    return [null, allWeekItems]
 }
 
 const parseNameAndPrice = (nameAndPrice: string) => {

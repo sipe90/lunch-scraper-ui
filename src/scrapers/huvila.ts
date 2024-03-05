@@ -30,7 +30,7 @@ const scrape: ScrapeFunction = async (page, url) => {
         log.warn('Found an unexpected number of elements in weekday menu (%d != 5)', weekdayMenu.length)
     }
 
-    return [clampWeekMenu(weekdayMenu), []]
+    return [clampWeekMenu(weekdayMenu), null]
 }
 
 

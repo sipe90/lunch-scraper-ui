@@ -20,8 +20,8 @@ export interface Menu {
     venue: string
     url: string
     weeklyOnly: boolean
-    weekMenu: WeekMenuArray
-    allWeekMenu: MenuItem[]
+    weekMenu: WeekMenuArray | null
+    allWeekMenu: MenuItem[] | null
 }
 
 
@@ -37,8 +37,8 @@ interface WeekMenu {
     venue: string
     url: string
     weeklyOnly: boolean
-    weekMenu: WeekMenuArray
-    allWeekMenu: MenuItem[]
+    weekMenu: WeekMenuArray | null
+    allWeekMenu: MenuItem[] | null
 }
 
 export interface DayMenus {
@@ -47,8 +47,9 @@ export interface DayMenus {
 }
 
 interface DayMenu {
-    dayMenu: MenuItem[]
-    allWeekMenu: MenuItem[]
+    venue: string
+    url: string
+    dayMenu: MenuItem[] | null
 }
 
 export type WeekMenuArray = [MenuItem[], MenuItem[], MenuItem[], MenuItem[], MenuItem[]]
@@ -85,10 +86,19 @@ export const getDayMenus = (weekday: Weekday): DayMenus => {
         menus: vendorMenus.map(({ venue, url, weekMenu, allWeekMenu }) => ({
             venue,
             url,
-            dayMenu: weekMenu[weekday] || [],
-            allWeekMenu
+            dayMenu: getDayMenu(weekMenu ? (weekMenu[weekday] || null) : null, allWeekMenu)
         }))
     }
+}
+
+const getDayMenu = (weekdayMenu: MenuItem[] | null, allWeekMenu: MenuItem[] | null) => {
+    if (weekdayMenu == null && allWeekMenu == null)
+        return null
+    if (weekdayMenu == null)
+        return allWeekMenu
+    if (allWeekMenu == null)
+        return weekdayMenu
+    return weekdayMenu.concat(allWeekMenu)
 }
 
 export const saveMenus = (newMenus: Menus): void => { menus = newMenus }
