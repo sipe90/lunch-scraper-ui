@@ -59,7 +59,9 @@ class Scraper {
     }
 
     private doScrape = async (venue: Venue): Promise<Menu> => {
-        log.debug('Opening a new browser page for scraping %s', venue.id)
+        const { id, url, scraper, name, weeklyOnly, buffet } = venue
+
+        log.debug('Opening a new browser page for scraping %s', id)
         const page = await this.browser.newPage()
         page.setDefaultTimeout(2000)
         page.setDefaultNavigationTimeout(10000)
@@ -68,15 +70,15 @@ class Scraper {
         let allWeekMenu: MenuItem[] | null = null
 
         try {
-            [weekMenu, allWeekMenu] = await venue.scraper(page, venue.url)
+            [weekMenu, allWeekMenu] = await scraper(page, url)
         } catch (err) {
-            log.error(err, 'Failed to scrape %s', venue.id)
+            log.error(err, 'Failed to scrape %s', id)
         } finally {
             log.debug('Closing browser page after scraping %s', venue.id)
             await page.close()
         }
 
-        return { venue: venue.name, url: venue.url, weeklyOnly: venue.weeklyOnly, weekMenu, allWeekMenu }
+        return { venue: venue.name, url, weeklyOnly, buffet, weekMenu, allWeekMenu }
     }
 }
 

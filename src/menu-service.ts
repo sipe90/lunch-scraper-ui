@@ -20,6 +20,7 @@ export interface Menu {
     venue: string
     url: string
     weeklyOnly: boolean
+    buffet: boolean
     weekMenu: WeekMenuArray | null
     allWeekMenu: MenuItem[] | null
 }

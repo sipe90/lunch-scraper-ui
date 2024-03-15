@@ -72,6 +72,8 @@ const scrape: ScrapeFunction = async (page, url) => {
 
     allWeekItems = allWeekItems.concat({ name: pizzaName, price: pizzaPrice, description: pizzaDescription })
 
+    log.info('Scrape complete')
+
     return [clampWeekMenu(weekdayMenu), allWeekItems]
 }
 

@@ -22,6 +22,8 @@ const scrape: ScrapeFunction = async (page, url) => {
         return { name, price, description }
     }))
 
+    log.info('Scrape complete')
+
     return [null, allWeekItems]
 }
 

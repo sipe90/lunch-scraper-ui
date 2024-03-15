@@ -11,6 +11,7 @@ export interface Venue {
     name: string
     url: string
     weeklyOnly: boolean
+    buffet: boolean
     scraper: ScrapeFunction
 }
 
@@ -20,6 +21,7 @@ const venues: Venue[] = [
         name: 'Bistro En Place',
         url: 'https://www.bistroenplace.fi',
         weeklyOnly: true,
+        buffet: false,
         scraper: bistro
     },
     {
@@ -27,6 +29,7 @@ const venues: Venue[] = [
         name: 'Bumma',
         url: 'https://www.bumma.fi/lounas',
         weeklyOnly: false,
+        buffet: false,
         scraper: bumma
     },
     {
@@ -34,6 +37,7 @@ const venues: Venue[] = [
         name: 'Food & Co',
         url: 'https://www.compass-group.fi/ravintolat-ja-ruokalistat/foodco/kaupungit/jarvenpaa/jarvenpaa-talo/',
         weeklyOnly: false,
+        buffet: true,
         scraper: foodAndCo
     },
     {
@@ -41,6 +45,7 @@ const venues: Venue[] = [
         name: 'Cantina Viva Zapata',
         url: 'https://cantinazapata.com/lounas',
         weeklyOnly: false,
+        buffet: false,
         scraper: zapata
     },
     {
@@ -48,6 +53,7 @@ const venues: Venue[] = [
         name: 'Huvila',
         url: 'https://www.huvilassa.fi/lounas',
         weeklyOnly: false,
+        buffet: false,
         scraper: huvila
     }
 ]
