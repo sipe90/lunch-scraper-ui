@@ -5,7 +5,10 @@ import { MenuItem, Menu, Menus, WeekMenuArray } from './menu-service.js'
 import logger from './logger.js'
 import { getYearAndWeek } from './util.js'
 
-export type ScrapeFunction = (page: Page, url: string) => Promise<[WeekMenuArray | null, MenuItem[] | null]>
+export type HtmlScrape = (page: Page, url: string) => Promise<[WeekMenuArray | null, MenuItem[] | null]>
+export type ApiScrape = () => Promise<[WeekMenuArray | null, MenuItem[] | null]>
+
+export type ScrapeFunction = HtmlScrape | ApiScrape
 
 const log = logger('scrape-service')
 
@@ -59,26 +62,42 @@ class Scraper {
     }
 
     private doScrape = async (venue: Venue): Promise<Menu> => {
-        const { id, url, scraper, name, weeklyOnly, buffet } = venue
+        const { id, url, scraperType, scraper, name, weeklyOnly, buffet } = venue
+
+        let weekMenu: WeekMenuArray | null = null
+        let allWeekMenu: MenuItem[] | null = null
+
+        try {
+            if (scraperType == 'api') {
+                [weekMenu, allWeekMenu] = await this.scrapeApi(scraper as ApiScrape)
+            } else {
+                [weekMenu, allWeekMenu] = await this.scrapeHtml(venue)
+            }
+        } catch (err) {
+            log.error(err, 'Failed to scrape %s', id)
+        }
+
+        return { venue: name, url, weeklyOnly, buffet, weekMenu, allWeekMenu }
+    }
+
+    private scrapeApi = async (scraper: ApiScrape) => {
+        return scraper()
+    }
+
+    private scrapeHtml = async (venue: Venue) => {
+        const { id, url, scraper } = venue
 
         log.debug('Opening a new browser page for scraping %s', id)
         const page = await this.browser.newPage()
         page.setDefaultTimeout(2000)
         page.setDefaultNavigationTimeout(10000)
 
-        let weekMenu: WeekMenuArray | null = null
-        let allWeekMenu: MenuItem[] | null = null
-
         try {
-            [weekMenu, allWeekMenu] = await scraper(page, url)
-        } catch (err) {
-            log.error(err, 'Failed to scrape %s', id)
+            return await scraper(page, url)
         } finally {
             log.debug('Closing browser page after scraping %s', venue.id)
             await page.close()
         }
-
-        return { venue: venue.name, url, weeklyOnly, buffet, weekMenu, allWeekMenu }
     }
 }
 

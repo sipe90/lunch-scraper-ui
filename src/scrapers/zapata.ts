@@ -1,13 +1,13 @@
 import { getWeek } from 'date-fns'
 
-import { ScrapeFunction } from '../scrape-service.js'
+import { HtmlScrape } from '../scrape-service.js'
 import { clampWeekMenu } from '../util.js'
 import logger from '../logger.js'
 import { MenuItem } from '../menu-service.js'
 
 const log = logger('scraper:zapata')
 
-const scrape: ScrapeFunction = async (page, url) => {
+const scrape: HtmlScrape = async (page, url) => {
 
     await page.goto(url)
 

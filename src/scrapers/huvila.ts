@@ -1,11 +1,11 @@
-import { ScrapeFunction } from '../scrape-service.js'
+import { HtmlScrape } from '../scrape-service.js'
 import logger from '../logger.js'
 import { clampWeekMenu } from '../util.js'
 import { MenuItem } from '../menu-service.js'
 
 const log = logger('scraper:huvila')
 
-const scrape: ScrapeFunction = async (page, url) => {
+const scrape: HtmlScrape = async (page, url) => {
     log.info('Navigating to %s', url)
     await page.goto(url)
 

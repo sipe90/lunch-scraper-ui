@@ -12,6 +12,7 @@ export interface Venue {
     url: string
     weeklyOnly: boolean
     buffet: boolean
+    scraperType: 'api' | 'html'
     scraper: ScrapeFunction
 }
 
@@ -22,6 +23,7 @@ const venues: Venue[] = [
         url: 'https://www.bistroenplace.fi',
         weeklyOnly: true,
         buffet: false,
+        scraperType: 'html',
         scraper: bistro
     },
     {
@@ -30,6 +32,7 @@ const venues: Venue[] = [
         url: 'https://www.bumma.fi/lounas',
         weeklyOnly: false,
         buffet: false,
+        scraperType: 'html',
         scraper: bumma
     },
     {
@@ -38,6 +41,7 @@ const venues: Venue[] = [
         url: 'https://www.compass-group.fi/ravintolat-ja-ruokalistat/foodco/kaupungit/jarvenpaa/jarvenpaa-talo/',
         weeklyOnly: false,
         buffet: true,
+        scraperType: 'api',
         scraper: foodAndCo
     },
     {
@@ -46,6 +50,7 @@ const venues: Venue[] = [
         url: 'https://cantinazapata.com/lounas',
         weeklyOnly: false,
         buffet: false,
+        scraperType: 'html',
         scraper: zapata
     },
     {
@@ -54,6 +59,7 @@ const venues: Venue[] = [
         url: 'https://www.huvilassa.fi/lounas',
         weeklyOnly: false,
         buffet: false,
+        scraperType: 'html',
         scraper: huvila
     }
 ]

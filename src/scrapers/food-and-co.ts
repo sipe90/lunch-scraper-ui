@@ -1,6 +1,6 @@
 import got from 'got'
 
-import { ScrapeFunction } from '../scrape-service.js'
+import { ApiScrape } from '../scrape-service.js'
 import { clampWeekMenu, getISODateStr } from '../util.js'
 import { MenuItem } from '../menu-service.js'
 import logger from '../logger.js'
@@ -30,7 +30,7 @@ interface WeekMenusResponse {
 
 const API_ENDPOINT = 'https://www.compass-group.fi/menuapi/week-menus'
 
-const scrape: ScrapeFunction = async () => {
+const scrape: ApiScrape = async () => {
     const searchParams = { costCenter: '3005', language: 'fi', date: getISODateStr() }
 
     log.info('Making a GET request to %s', API_ENDPOINT)
