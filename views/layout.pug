@@ -7,6 +7,15 @@ html(lang='fi')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
     link(href='style.css', rel='stylesheet')
     title= 'JäkeLunch'
-  body
-    main(class='p-6')
+  body(class='p-6 max-w-[1600px] mx-auto')
+    h1(class='text-5xl') Järvenpään keskustan lounaslistat viikolla #{week}
+    nav 
+      ul(class='mt-4 max-w-[800px] flex flex-row text-xl font-semibold')
+        +navLink('Maanantai', '/lunch/mon')
+        +navLink('Tiistai', '/lunch/tue')
+        +navLink('Keskiviikko', '/lunch/wed')
+        +navLink('Torstai', '/lunch/thu')
+        +navLink('Perjaintai', '/lunch/fri')
+        +navLink('Koko viikko', '/lunch/week')
+    main(class='mt-6')
       block content

@@ -1,5 +1,9 @@
+mixin navLink(title, href)
+  li(class='flex-1')
+    a(href=href)= title
+
 mixin dayMenu(title, dayMenu)
-  div(class='py-2 px-4 flex-[1_1_500px]')
+  div(class='py-2 px-4 flex-[1_1_0px]')
     if (title)
       h3(class='text-2xl')= title
     if (dayMenu.length)
@@ -13,4 +17,4 @@ mixin dayMenu(title, dayMenu)
               div
                 i= item.description
     else
-      div(class='mt-1') Päivän ruokalista ei ole saatavilla
+      div(class='mt-1') Päivän ruokalista ei ole saatavill

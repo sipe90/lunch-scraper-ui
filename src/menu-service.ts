@@ -29,7 +29,6 @@ export interface Menu {
 
 
 export interface WeekMenus {
-    year: number
     week: number
     weekDates: string[]
     menus: WeekMenu[]
@@ -44,6 +43,7 @@ interface WeekMenu {
 }
 
 export interface DayMenus {
+    week: number
     date: string
     menus: DayMenu[]
 }
@@ -69,7 +69,6 @@ let menus: Menus = { year: getYear(), week: getWeek(), vendorMenus: [] }
 export const getWeekMenus = (): WeekMenus => {
     const { year, week, vendorMenus } = menus
     return {
-        year: year,
         week: week,
         weekDates: weekdayValues.map((wd) => getWeekdayDateString(year, week, wd)),
         menus: vendorMenus.map(({ venue, url, weeklyOnly, weekMenu, allWeekMenu }) => ({
@@ -86,6 +85,7 @@ export const getWeekMenus = (): WeekMenus => {
 export const getDayMenus = (weekday: Weekday): DayMenus => {
     const { year, week, vendorMenus } = menus
     return {
+        week: week,
         date: getWeekdayDateString(year, week, weekday),
         menus: vendorMenus.map(({ venue, url, buffet, buffetPrice, weekMenu, allWeekMenu }) => ({
             venue,
