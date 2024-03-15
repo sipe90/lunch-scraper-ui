@@ -69,8 +69,8 @@ app.get('/lunch/week', (_, res) => {
 })
 
 app.get('/lunch/:weekday(mon|tue|wed|thu|fri)', (req, res) => {
-    const weekday = weekdayMapping[req.params.weekday] || null
-    if (weekday == null) {
+    const weekday = weekdayMapping[req.params.weekday]
+    if (weekday == undefined) {
         return res.render('404')
     }
     const menus = getDayMenus(weekday)
