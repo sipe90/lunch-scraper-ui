@@ -18,7 +18,7 @@ const scrape: HtmlScrape = async (page, url) => {
     const weekDayTableLocators = (await tableLocator.all()).filter((_, i) => i < 5)
     const allWeekTableLocator = tableLocator.nth(5)
 
-    const weekdayMenu: MenuItem[][] = await Promise.all(weekDayTableLocators.map(async (table) => {
+    const weekMenu: MenuItem[][] = await Promise.all(weekDayTableLocators.map(async (table) => {
         const itemLocators = await table.locator(':nth-child(n+2 of tr)')
             .filter({ hasNotText: 'PÄIVÄN PIZZA' })
             .all()
@@ -39,12 +39,12 @@ const scrape: HtmlScrape = async (page, url) => {
         return items
     }))
 
-    if (weekdayMenu.length != 5) {
-        log.warn('Found an unexpected number of elements in weekday menu (%d != 5)', weekdayMenu.length)
+    if (weekMenu.length != 5) {
+        log.warn('Found an unexpected number of elements in weekday menu (%d != 5)', weekMenu.length)
     }
 
     const allWeekItemLocators = allWeekTableLocator.locator(':nth-child(n+2 of tr)').all()
-    let allWeekItems: MenuItem[] = await Promise.all((await allWeekItemLocators).map(async (item) => {
+    let allWeekMenu: MenuItem[] = await Promise.all((await allWeekItemLocators).map(async (item) => {
         const nameLocator = item.locator(':nth-child(1 of td)')
         const priceLocator = item.locator(':nth-child(3 of td)')
 
@@ -70,11 +70,15 @@ const scrape: HtmlScrape = async (page, url) => {
     const pizzaPrice = (await pizzaPriceLocator.innerText()).trim()
     const pizzaDescription = (await pizzaDescriptionLocator.innerText()).trim()
 
-    allWeekItems = allWeekItems.concat({ name: pizzaName, price: pizzaPrice, description: pizzaDescription })
+    allWeekMenu = allWeekMenu.concat({ name: pizzaName, price: pizzaPrice, description: pizzaDescription })
 
     log.info('Scrape complete')
 
-    return [clampWeekMenu(weekdayMenu), allWeekItems]
+    return {
+        buffetPrice: null,
+        weekMenu: clampWeekMenu(weekMenu),
+        allWeekMenu,
+    }
 }
 
 export default scrape

@@ -37,7 +37,7 @@ const venues: Venue[] = [
     },
     {
         id: 'food-and-co',
-        name: 'Food & Co',
+        name: 'Food & Co Järvenpää-talo',
         url: 'https://www.compass-group.fi/ravintolat-ja-ruokalistat/foodco/kaupungit/jarvenpaa/jarvenpaa-talo/',
         weeklyOnly: false,
         buffet: true,

@@ -9,7 +9,7 @@ const scrape: HtmlScrape = async (page, url) => {
 
     const menuSectionLocator = page.locator('.menu-section').first()
     const menuItemLocator = await menuSectionLocator.locator(':nth-child(n+4 of .menu-item)').all()
-    const allWeekItems = await Promise.all(menuItemLocator.map(async (menuItem) => {
+    const allWeekMenu = await Promise.all(menuItemLocator.map(async (menuItem) => {
         const nameAndPriceLocator = menuItem.locator('.menu-item-title')
         const descriptionLocator = menuItem.locator('.menu-item-description')
 
@@ -23,7 +23,11 @@ const scrape: HtmlScrape = async (page, url) => {
 
     log.info('Scrape complete')
 
-    return [null, allWeekItems]
+    return {
+        buffetPrice: null,
+        weekMenu: null,
+        allWeekMenu,
+    }
 }
 
 const parseNameAndPrice = (nameAndPrice: string) => {

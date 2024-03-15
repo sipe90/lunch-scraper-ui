@@ -8,6 +8,8 @@ block content
         h2(class='text-3xl')
           a(href=menu.url, target='_blank')= menu.venue
         if (menu.dayMenu)
+          if (menu.buffet)
+            h3(class='mt-2 text-xl') Seisova pöytä: #{menu.buffetPrice}
           div(class='mt-2 flex flex-wrap')
             if (menu.dayMenu)
               +dayMenu(null, menu.dayMenu)

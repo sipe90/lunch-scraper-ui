@@ -21,6 +21,7 @@ export interface Menu {
     url: string
     weeklyOnly: boolean
     buffet: boolean
+    buffetPrice: string | null
     weekMenu: WeekMenuArray | null
     allWeekMenu: MenuItem[] | null
 }
@@ -50,6 +51,8 @@ export interface DayMenus {
 interface DayMenu {
     venue: string
     url: string
+    buffet: boolean
+    buffetPrice: string | null
     dayMenu: MenuItem[] | null
 }
 
@@ -84,9 +87,11 @@ export const getDayMenus = (weekday: Weekday): DayMenus => {
     const { year, week, vendorMenus } = menus
     return {
         date: getWeekdayDateString(year, week, weekday),
-        menus: vendorMenus.map(({ venue, url, weekMenu, allWeekMenu }) => ({
+        menus: vendorMenus.map(({ venue, url, buffet, buffetPrice, weekMenu, allWeekMenu }) => ({
             venue,
             url,
+            buffet,
+            buffetPrice,
             dayMenu: getDayMenu(weekMenu ? (weekMenu[weekday] || null) : null, allWeekMenu)
         }))
     }

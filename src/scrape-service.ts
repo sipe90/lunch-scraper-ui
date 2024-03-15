@@ -5,8 +5,14 @@ import { MenuItem, Menu, Menus, WeekMenuArray } from './menu-service.js'
 import logger from './logger.js'
 import { getYearAndWeek } from './util.js'
 
-export type HtmlScrape = (page: Page, url: string) => Promise<[WeekMenuArray | null, MenuItem[] | null]>
-export type ApiScrape = () => Promise<[WeekMenuArray | null, MenuItem[] | null]>
+export interface ScrapeResult {
+    weekMenu: WeekMenuArray | null
+    allWeekMenu: MenuItem[] | null
+    buffetPrice: string | null
+}
+
+export type HtmlScrape = (page: Page, url: string) => Promise<ScrapeResult>
+export type ApiScrape = () => Promise<ScrapeResult>
 
 export type ScrapeFunction = HtmlScrape | ApiScrape
 
@@ -64,20 +70,29 @@ class Scraper {
     private doScrape = async (venue: Venue): Promise<Menu> => {
         const { id, url, scraperType, scraper, name, weeklyOnly, buffet } = venue
 
-        let weekMenu: WeekMenuArray | null = null
-        let allWeekMenu: MenuItem[] | null = null
+        let scrapeResult: ScrapeResult = { buffetPrice: null, allWeekMenu: null, weekMenu: null }
 
         try {
             if (scraperType == 'api') {
-                [weekMenu, allWeekMenu] = await this.scrapeApi(scraper as ApiScrape)
+                scrapeResult = await this.scrapeApi(scraper as ApiScrape)
             } else {
-                [weekMenu, allWeekMenu] = await this.scrapeHtml(venue)
+                scrapeResult = await this.scrapeHtml(venue)
             }
         } catch (err) {
             log.error(err, 'Failed to scrape %s', id)
         }
 
-        return { venue: name, url, weeklyOnly, buffet, weekMenu, allWeekMenu }
+        const { buffetPrice, weekMenu, allWeekMenu } = scrapeResult
+
+        return {
+            venue: name,
+            url,
+            weeklyOnly,
+            buffet,
+            buffetPrice,
+            weekMenu,
+            allWeekMenu
+        }
     }
 
     private scrapeApi = async (scraper: ApiScrape) => {
