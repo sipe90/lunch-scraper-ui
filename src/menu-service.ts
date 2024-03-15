@@ -1,4 +1,4 @@
-import { getWeekdayDateString } from './util.js'
+import { getYear, getWeek, getWeekdayDateString } from './util.js'
 
 export enum Weekday {
     MONDAY = 0,
@@ -60,7 +60,7 @@ export interface MenuItem {
     description: string | null,
 }
 
-let menus: Menus = { year: 0, week: 0, vendorMenus: [] }
+let menus: Menus = { year: getYear(), week: getWeek(), vendorMenus: [] }
 
 export const getWeekMenus = (): WeekMenus => {
     const { year, week, vendorMenus } = menus

@@ -12,17 +12,19 @@ export const dirname = (filename: string) => path.dirname(filename)
 
 export const getYearAndWeek = (date: Date = new Date()): [number, number] => {
     return [
-        dateFns.getISOWeekYear(date),
+        getYear(date),
         getWeek(date)
     ]
 }
 
+export const getYear = (date: Date = new Date()): number =>
+    dateFns.getISOWeekYear(date)
+
+export const getWeek = (date: Date = new Date()): number =>
+    dateFns.getISOWeek(date)
+
 export const getDayOfWeek = (date: Date = new Date()): Weekday => {
     return dateFns.getISODay(date) - 1 as Weekday
-}
-
-export const getWeek = (date: Date = new Date()): number => {
-    return dateFns.getISOWeek(date)
 }
 
 export const getWeekdayDate = (year: number, week: number, weekday: Weekday): Date => {
