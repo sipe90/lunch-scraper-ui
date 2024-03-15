@@ -17,6 +17,10 @@ export const getYearAndWeek = (date: Date = new Date()): [number, number] => {
     ]
 }
 
+export const getISODateStr = (date: Date = new Date()): string => {
+    return dateFns.formatISO(date)
+}
+
 export const getYear = (date: Date = new Date()): number =>
     dateFns.getISOWeekYear(date)
 

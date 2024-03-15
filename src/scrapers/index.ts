@@ -2,6 +2,7 @@ import { ScrapeFunction } from '../scrape-service.js'
 
 import bistro from './bistro.js'
 import bumma from './bumma.js'
+import foodAndCo from './food-and-co.js'
 import huvila from './huvila.js'
 import zapata from './zapata.js'
 
@@ -27,6 +28,13 @@ const venues: Venue[] = [
         url: 'https://www.bumma.fi/lounas',
         weeklyOnly: false,
         scraper: bumma
+    },
+    {
+        id: 'food-and-co',
+        name: 'Food & Co',
+        url: 'https://www.compass-group.fi/ravintolat-ja-ruokalistat/foodco/kaupungit/jarvenpaa/jarvenpaa-talo/',
+        weeklyOnly: false,
+        scraper: foodAndCo
     },
     {
         id: 'zapata',
