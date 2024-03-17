@@ -37,8 +37,6 @@ const scrape: ApiScrape = async () => {
 
     const response = await got.get(API_ENDPOINT, { searchParams }).json<WeekMenusResponse>()
 
-    console.log(JSON.stringify(response))
-
     let buffetPrice: string | null = null
 
     const weekMenu = response.menus.map(({ menuPackages }) => {
