@@ -3,6 +3,7 @@ import { ScrapeFunction } from '../scrape-service.js'
 import bistro from './bistro.js'
 import bumma from './bumma.js'
 import foodAndCo from './food-and-co.js'
+import huili from './huili.js'
 import huvila from './huvila.js'
 import zapata from './zapata.js'
 
@@ -52,6 +53,15 @@ const venues: Venue[] = [
         buffet: false,
         scraperType: 'html',
         scraper: zapata
+    },
+    {
+        id: 'huili',
+        name: 'Huili',
+        url: 'https://www.ravintolahuili.fi/lounas',
+        weeklyOnly: false,
+        buffet: false,
+        scraperType: 'html',
+        scraper: huili
     },
     {
         id: 'huvila',
