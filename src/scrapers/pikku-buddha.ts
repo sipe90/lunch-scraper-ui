@@ -22,10 +22,10 @@ const scrape: HtmlScrape = async (context, url) => {
             const innerText = await menuItem.innerText()
             const nameAndPriceLocator = menuItem.locator(':nth-child(1)')
 
-            const nameAndPrice = sanitizeString(await nameAndPriceLocator.innerText())
-            const description = sanitizeString(innerText.substring(nameAndPrice.length, innerText.indexOf('.', nameAndPrice.length)))
+            const nameAndPrice = await nameAndPriceLocator.innerText()
+            const description = sanitizeString(innerText.substring(nameAndPrice.length, innerText.indexOf('.', nameAndPrice.length) + 1))
 
-            const [name, price] = parseNameAndPrice(nameAndPrice)
+            const [name, price] = parseNameAndPrice(sanitizeString(nameAndPrice))
 
             return {
                 name,
