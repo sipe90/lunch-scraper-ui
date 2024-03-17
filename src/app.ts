@@ -58,7 +58,7 @@ app.get('/', (_, res) => {
 
 app.get('/lunch', (_, res) => {
     const weekday = getDayOfWeek()
-    const weekdayPath = inverseWeekdayMapping[weekday]
+    const weekdayPath = inverseWeekdayMapping[weekday] || 'week'
 
     res.redirect(`/lunch/${weekdayPath}`)
 })
