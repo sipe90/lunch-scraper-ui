@@ -8,7 +8,7 @@ import { Weekday, getDayMenus, getWeekMenus, saveMenus } from './menu-service.js
 import Scraper from './scrape-service.js'
 import scrapeJob from './scrape-job.js'
 import { formatISO } from 'date-fns'
-import { getDayOfWeek } from './util.js'
+import { getDayOfWeek } from './util/time-util.js'
 
 const HOST = process.env.HOST || 'localhost'
 const PORT = parseInt(process.env.PORT || '8080', 10)

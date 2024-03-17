@@ -1,14 +1,6 @@
 import * as dateFns from 'date-fns'
 import { fi } from "date-fns/locale"
-import { MenuItem, WeekMenuArray, Weekday } from './menu-service.js'
-
-import { fileURLToPath } from 'node:url'
-import path from 'node:path'
-import * as R from 'remeda'
-
-export const filename = (metaUrl: string) => fileURLToPath(metaUrl)
-
-export const dirname = (filename: string) => path.dirname(filename)
+import { Weekday } from '../menu-service.js'
 
 export const getYearAndWeek = (date: Date = new Date()): [number, number] => {
     return [
@@ -43,17 +35,4 @@ export const getWeekdayDateString = (year: number, week: number, weekday: Weekda
     const dateStr = dateFns.format(weekDayDate, 'cccc d.M', { weekStartsOn: 1, locale: fi })
 
     return dateStr.charAt(0).toLocaleUpperCase() + dateStr.slice(1)
-}
-
-export const clampWeekMenu = (weekMenu?: MenuItem[][]): WeekMenuArray => {
-    if (!weekMenu) {
-        return [[], [], [], [], []]
-    }
-    if (weekMenu.length < 5) {
-        return weekMenu.concat(...R.range(0, 5 - weekMenu.length).map(() => [])) as WeekMenuArray
-    }
-    if (weekMenu.length > 5) {
-        return weekMenu.slice(0, 5) as WeekMenuArray
-    }
-    return weekMenu as WeekMenuArray
 }

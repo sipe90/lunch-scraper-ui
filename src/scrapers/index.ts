@@ -5,6 +5,7 @@ import bumma from './bumma.js'
 import foodAndCo from './food-and-co.js'
 import huili from './huili.js'
 import huvila from './huvila.js'
+import pikkuBuddha from './pikku-buddha.js'
 import zapata from './zapata.js'
 
 export interface Venue {
@@ -71,6 +72,15 @@ const venues: Venue[] = [
         buffet: false,
         scraperType: 'html',
         scraper: huvila
+    },
+    {
+        id: 'pikku-buddha',
+        name: 'Pikku Buddha',
+        url: 'https://www.ravintolapikkubuddha.com/lounas',
+        weeklyOnly: false,
+        buffet: false,
+        scraperType: 'html',
+        scraper: pikkuBuddha
     }
 ]
 

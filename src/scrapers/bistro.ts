@@ -1,11 +1,14 @@
 import { HtmlScrape } from '../scrape-service.js'
 import logger from '../logger.js'
+import { nameAndPriceParser, openPage, sanitizeString } from '../util/scrape-util.js'
 
 const log = logger('scraper:bistro')
 
-const scrape: HtmlScrape = async (page, url) => {
-    log.info('Navigating to %s', url)
-    await page.goto(url)
+const parseNameAndPrice = nameAndPriceParser(/^(.+) (\d+(?:,\d+)?)$/)
+
+const scrape: HtmlScrape = async (context, url) => {
+    log.info('Opening a new page and navigating to %s', url)
+    const page = await openPage(context, url)
 
     const menuSectionLocator = page.locator('.menu-section').first()
     const menuItemLocator = await menuSectionLocator.locator(':nth-child(n+4 of .menu-item)').all()
@@ -13,8 +16,8 @@ const scrape: HtmlScrape = async (page, url) => {
         const nameAndPriceLocator = menuItem.locator('.menu-item-title')
         const descriptionLocator = menuItem.locator('.menu-item-description')
 
-        const nameAndPrice = (await nameAndPriceLocator.innerText()).trim()
-        const description = (await descriptionLocator.innerText().catch(() => '')).trim()
+        const nameAndPrice = sanitizeString(await nameAndPriceLocator.innerText())
+        const description = sanitizeString(await descriptionLocator.innerText().catch(() => ''))
 
         const [name, price] = parseNameAndPrice(nameAndPrice)
 
@@ -28,24 +31,6 @@ const scrape: HtmlScrape = async (page, url) => {
         weekMenu: null,
         allWeekMenu,
     }
-}
-
-const parseNameAndPrice = (nameAndPrice: string) => {
-    const match = nameAndPrice.match(/^(.+) (\d+(?:,\d+)?)$/)
-    if (!match) {
-        throw new Error(`Could not parse menu item name and price from string "${nameAndPrice}"`)
-    }
-    const name = match[1]
-    const price = match[2]
-
-    if (!name) {
-        throw new Error(`Could not parse menu item name from string "${nameAndPrice}"`)
-    }
-    if (!price) {
-        throw new Error(`Could not parse menu item price from string "${nameAndPrice}"`)
-    }
-
-    return [name.trim(), price.trim()]
 }
 
 export default scrape

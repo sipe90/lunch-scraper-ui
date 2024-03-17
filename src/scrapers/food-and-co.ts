@@ -1,9 +1,10 @@
 import got from 'got'
 
 import { ApiScrape } from '../scrape-service.js'
-import { clampWeekMenu, getISODateStr } from '../util.js'
+import { getISODateStr } from '../util/time-util.js'
 import { MenuItem } from '../menu-service.js'
 import logger from '../logger.js'
+import { clampWeekMenu } from '../util/scrape-util.js'
 
 const log = logger('scraper:food-and-co')
 

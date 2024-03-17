@@ -1,15 +1,15 @@
 import { getWeek } from 'date-fns'
 
 import { HtmlScrape } from '../scrape-service.js'
-import { clampWeekMenu } from '../util.js'
 import logger from '../logger.js'
 import { MenuItem } from '../menu-service.js'
+import { clampWeekMenu, openPage, sanitizeString } from '../util/scrape-util.js'
 
 const log = logger('scraper:zapata')
 
-const scrape: HtmlScrape = async (page, url) => {
-
-    await page.goto(url)
+const scrape: HtmlScrape = async (context, url) => {
+    log.info('Opening a new page and navigating to %s', url)
+    const page = await openPage(context, url)
 
     const currentWeek = getWeek(new Date(), { weekStartsOn: 1 })
 
@@ -66,9 +66,9 @@ const scrape: HtmlScrape = async (page, url) => {
     const pizzaPriceLocator = pizzaItemLocator.locator(':nth-child(3 of td)')
     const pizzaDescriptionLocator = tableLocator.nth(6).locator(':nth-child(2 of tr)')
 
-    const pizzaName = (await pizzaNameLocator.innerText()).trim()
-    const pizzaPrice = (await pizzaPriceLocator.innerText()).trim()
-    const pizzaDescription = (await pizzaDescriptionLocator.innerText()).trim()
+    const pizzaName = sanitizeString(await pizzaNameLocator.innerText())
+    const pizzaPrice = sanitizeString(await pizzaPriceLocator.innerText())
+    const pizzaDescription = sanitizeString(await pizzaDescriptionLocator.innerText())
 
     allWeekMenu = allWeekMenu.concat({ name: pizzaName, price: pizzaPrice, description: pizzaDescription })
 

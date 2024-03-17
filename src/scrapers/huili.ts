@@ -1,15 +1,16 @@
 import { HtmlScrape } from '../scrape-service.js'
 import logger from '../logger.js'
-import { clampWeekMenu, getWeek } from '../util.js'
+import { getWeek } from '../util/time-util.js'
 import { MenuItem } from '../menu-service.js'
 
 import * as R from 'remeda'
+import { clampWeekMenu, openPage, sanitizeString } from '../util/scrape-util.js'
 
 const log = logger('scraper:huili')
 
-const scrape: HtmlScrape = async (page, url) => {
-    log.info('Navigating to %s', url)
-    await page.goto(url)
+const scrape: HtmlScrape = async (context, url) => {
+    log.info('Opening a new page and navigating to %s', url)
+    const page = await openPage(context, url)
 
     const pricesListLocator = page.locator('ul', { hasText: '€' })
     const pricesLocator = await pricesListLocator.locator(':nth-child(-n+5 of li)').all()
@@ -24,7 +25,7 @@ const scrape: HtmlScrape = async (page, url) => {
 
         const menuItemLocator = await menuSection.locator('li').all()
         return Promise.all(menuItemLocator.map(async (menuItem, i) => {
-            const name = (await menuItem.innerText()).trim()
+            const name = sanitizeString(await menuItem.innerText())
             const price = prices[i]
 
             return { name, price, description: null }

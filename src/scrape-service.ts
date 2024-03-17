@@ -1,9 +1,9 @@
-import { Browser, Page, chromium } from 'playwright'
+import { Browser, BrowserContext, Page, chromium } from 'playwright'
 import scrapers, { Venue } from './scrapers/index.js'
 import { loadMenu, saveMenu } from './storage-service.js'
 import { MenuItem, Menu, Menus, WeekMenuArray } from './menu-service.js'
 import logger from './logger.js'
-import { getYearAndWeek } from './util.js'
+import { getYearAndWeek } from './util/time-util.js'
 
 export interface ScrapeResult {
     weekMenu: WeekMenuArray | null
@@ -11,7 +11,7 @@ export interface ScrapeResult {
     buffetPrice: string | null
 }
 
-export type HtmlScrape = (page: Page, url: string) => Promise<ScrapeResult>
+export type HtmlScrape = (context: BrowserContext, url: string) => Promise<ScrapeResult>
 export type ApiScrape = () => Promise<ScrapeResult>
 
 export type ScrapeFunction = HtmlScrape | ApiScrape
@@ -102,16 +102,17 @@ class Scraper {
     private scrapeHtml = async (venue: Venue) => {
         const { id, url, scraper } = venue
 
-        log.debug('Opening a new browser page for scraping %s', id)
-        const page = await this.browser.newPage()
-        page.setDefaultTimeout(2000)
-        page.setDefaultNavigationTimeout(10000)
+        log.debug('Opening a new browser context for scraping %s', id)
+
+        const context = await this.browser.newContext()
+        context.setDefaultTimeout(2000)
+        context.setDefaultNavigationTimeout(10000)
 
         try {
-            return await scraper(page, url)
+            return await scraper(context, url)
         } finally {
-            log.debug('Closing browser page after scraping %s', venue.id)
-            await page.close()
+            log.debug('Closing browser page after scraping %s', id)
+            await context.close()
         }
     }
 }

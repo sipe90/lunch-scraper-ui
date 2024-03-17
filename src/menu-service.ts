@@ -1,4 +1,4 @@
-import { getYear, getWeek, getWeekdayDateString } from './util.js'
+import { getYear, getWeek, getWeekdayDateString } from './util/time-util.js'
 
 export enum Weekday {
     MONDAY = 0,
