@@ -8,9 +8,9 @@ html(lang='fi')
     link(href='style.css', rel='stylesheet')
     title= 'JäkeLunch'
   body(class='p-6 max-w-[1600px] mx-auto')
-    h1(class='text-5xl') Järvenpään keskustan lounaslistat viikolla #{week}
+    h1(class='text-5xl') Järvenpään lounaslistat viikolla #{week}
     nav 
-      ul(class='mt-4 max-w-[800px] flex flex-row text-xl font-semibold')
+      ul(class='mt-4 max-w-[800px] flex flex-row flex-wrap text-xl font-semibold')
         +navLink('Maanantai', '/lunch/mon')
         +navLink('Tiistai', '/lunch/tue')
         +navLink('Keskiviikko', '/lunch/wed')
