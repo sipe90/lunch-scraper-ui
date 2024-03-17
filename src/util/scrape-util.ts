@@ -41,7 +41,7 @@ export const clampWeekMenu = (weekMenu?: MenuItem[][]): WeekMenuArray => {
         return [[], [], [], [], []]
     }
     if (weekMenu.length < 5) {
-        return weekMenu.concat(...R.range(0, 5 - weekMenu.length).map(() => [])) as WeekMenuArray
+        return weekMenu.concat(R.range(0, 5 - weekMenu.length).map(() => [])) as WeekMenuArray
     }
     if (weekMenu.length > 5) {
         return weekMenu.slice(0, 5) as WeekMenuArray
