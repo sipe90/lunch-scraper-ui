@@ -18,6 +18,8 @@ const port = parseInt(process.env.PORT ?? '8080', 10)
 const log = logger()
 const app = express()
 
+app.set('trust proxy', true)
+
 const scrapeCron = new Cron('0 * * * *')
 const scraper = await Scraper.getInstance()
 
