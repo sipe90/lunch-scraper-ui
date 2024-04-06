@@ -16,6 +16,21 @@ export const openPage = async (context: BrowserContext, url: string) => {
   return page
 }
 
+export const processPromises = async <T>(
+  promises: Array<Promise<T>>,
+  onRejected?: (reason: unknown, idx: number) => void
+): Promise<T[]> => {
+  const results = await Promise.allSettled(promises)
+  return results.reduce<T[]>((acc, result, idx) => {
+    if (result.status === 'fulfilled') {
+      return acc.concat([result.value])
+    }
+
+    onRejected?.(result.reason, idx)
+    return acc
+  }, [])
+}
+
 export const nameAndPriceParser =
   (regExp: RegExp) => (nameAndPrice: string) => {
     const match = nameAndPrice.match(regExp)

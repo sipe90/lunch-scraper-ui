@@ -3,7 +3,12 @@ import { getWeek } from 'date-fns'
 import { type HtmlScrape } from '../scrape-service.js'
 import logger from '../logger.js'
 import { type MenuItem } from '../menu-service.js'
-import { clampWeekMenu, openPage, sanitizeString } from '../util/scrape-util.js'
+import {
+  clampWeekMenu,
+  openPage,
+  processPromises,
+  sanitizeString,
+} from '../util/scrape-util.js'
 
 const log = logger('scraper:zapata')
 
@@ -58,8 +63,8 @@ const scrape: HtmlScrape = async (context, url) => {
   const allWeekItemLocators = allWeekTableLocator
     .locator(':nth-child(n+2 of tr)')
     .all()
-  let allWeekMenu: MenuItem[] = await Promise.all(
-    (await allWeekItemLocators).map(async (item) => {
+  const allWeekMenuItemPromises = (await allWeekItemLocators).map(
+    async (item) => {
       const nameLocator = item.locator(':nth-child(1 of td)')
       const priceLocator = item.locator(':nth-child(3 of td)')
 
@@ -70,32 +75,44 @@ const scrape: HtmlScrape = async (context, url) => {
         name,
         price,
         description: undefined,
+      } satisfies MenuItem
+    }
+  )
+
+  let allWeekMenu: MenuItem[] = await processPromises(allWeekMenuItemPromises)
+
+  try {
+    const pizzaItemLocators = (await tableLocator.all()).map(async (table) => {
+      const pizzaItemLocator = table
+        .locator('tr')
+        .filter({ hasText: 'PÄIVÄN PIZZA' })
+
+      const pizzaNameLocator = pizzaItemLocator.locator(':nth-child(1 of td)')
+      const pizzaPriceLocator = pizzaItemLocator.locator(':nth-child(3 of td)')
+      const pizzaDescriptionLocator = tableLocator
+        .nth(6)
+        .locator(':nth-child(2 of tr)')
+
+      const pizzaName = sanitizeString(await pizzaNameLocator.innerText())
+      const pizzaPrice = sanitizeString(await pizzaPriceLocator.innerText())
+      const pizzaDescription = sanitizeString(
+        await pizzaDescriptionLocator.innerText()
+      )
+
+      return {
+        name: pizzaName,
+        price: pizzaPrice,
+        description: pizzaDescription,
       }
     })
-  )
 
-  const pizzaItemLocator = tableLocator
-    .first()
-    .locator('tr')
-    .filter({ hasText: 'PÄIVÄN PIZZA' })
-
-  const pizzaNameLocator = pizzaItemLocator.locator(':nth-child(1 of td)')
-  const pizzaPriceLocator = pizzaItemLocator.locator(':nth-child(3 of td)')
-  const pizzaDescriptionLocator = tableLocator
-    .nth(6)
-    .locator(':nth-child(2 of tr)')
-
-  const pizzaName = sanitizeString(await pizzaNameLocator.innerText())
-  const pizzaPrice = sanitizeString(await pizzaPriceLocator.innerText())
-  const pizzaDescription = sanitizeString(
-    await pizzaDescriptionLocator.innerText()
-  )
-
-  allWeekMenu = allWeekMenu.concat({
-    name: pizzaName,
-    price: pizzaPrice,
-    description: pizzaDescription,
-  })
+    const pizzaItems = await processPromises(pizzaItemLocators)
+    if (pizzaItems.length) {
+      allWeekMenu = allWeekMenu.concat(pizzaItems[0])
+    }
+  } catch (err) {
+    log.warn(err, 'Failed to ')
+  }
 
   log.info('Scrape complete')
 
