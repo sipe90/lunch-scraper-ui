@@ -22,13 +22,18 @@ const WeekMenus: FC = () => {
           {(menu.weekMenu ?? menu.allWeekMenu) && (
             <div className="mt-2 flex flex-wrap">
               {!menu.weeklyOnly &&
-                menu.weekMenu?.map((m, idx) => (
-                  <DayMenu
-                    key={idx}
-                    title={getWeekdayDateString(year, week, idx)}
-                    menu={m}
-                  />
-                ))}
+                menu.weekMenu?.length &&
+                menu.weekMenu.map((m, idx) =>
+                  m.length ? (
+                    <DayMenu
+                      key={idx}
+                      title={getWeekdayDateString(year, week, idx)}
+                      menu={m}
+                    />
+                  ) : (
+                    <div key={idx}>Päivän ruokalista ei ole saatavilla</div>
+                  )
+                )}
               {menu.allWeekMenu && (
                 <DayMenu title="Koko viikon annokset" menu={menu.allWeekMenu} />
               )}

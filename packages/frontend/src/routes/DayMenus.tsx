@@ -28,7 +28,7 @@ const DayMenus: FC<DayMenusProps> = ({ weekday }) => {
                 {menu.venue}
               </a>
             </h2>
-            {menu.dayMenu && (
+            {menu.dayMenu?.length ? (
               <>
                 {menu.buffet && (
                   <h3 className="mt-2 text-xl">
@@ -39,7 +39,7 @@ const DayMenus: FC<DayMenusProps> = ({ weekday }) => {
                   <DayMenu menu={menu.dayMenu} />
                 </div>
               </>
-            )}
+            ) : null}
             {!menu.dayMenu?.length && (
               <div className="mt-2">Päivän ruokalista ei ole saatavilla</div>
             )}

@@ -16,7 +16,7 @@ const DayMenu: FC<DayMenuProps> = ({ title, menu }) => {
             <li key={idx} className="mt-1">
               <div>
                 <b>{item.name}</b>
-                <i className="ml-1">{item.description}</i>
+                <i className="ml-1">{item.price}</i>
               </div>
               <div>
                 <i>{item.description}</i>
