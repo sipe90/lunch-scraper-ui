@@ -1,34 +1,53 @@
+# Build builder image
 FROM node:20 AS builder
 
 WORKDIR /home/node/build
 
+# Install depencencies
 COPY package.json .
-COPY package-lock.json .
+COPY yarn.lock .
 
-RUN PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci
+COPY packages/frontend/package.json ./packages/frontend/package.json
+COPY packages/server/package.json ./packages/server/package.json
 
-COPY tsconfig.json .
-COPY src ./src
-COPY views ./views
-COPY tailwind.config.js .
+RUN PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 yarn install --frozen-lockfile
 
-RUN npm run build
+# Copy configuration files
+COPY packages/frontend/index.html ./packages/frontend/index.html
+COPY packages/frontend/*.config.* ./packages/frontend
+COPY packages/frontend/tsconfig.json ./packages/frontend/tsconfig.json
 
+COPY packages/server/tsconfig.json ./packages/server/tsconfig.json
+
+# Copy code
+COPY packages/frontend/src ./packages/frontend/src
+COPY packages/server/src ./packages/server/src
+
+RUN yarn build
+
+# Build production image
 FROM node:20
 
 ENV NODE_ENV production
 
 WORKDIR /home/node/app
 
+# Install production dependencies
 COPY --from=builder /home/node/build/package.json .
-COPY --from=builder /home/node/build/package-lock.json .
+COPY --from=builder /home/node/build/yarn.lock .
 
-RUN PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci
+COPY --from=builder /home/node/build/packages/server/package.json ./packages/server/package.json
+
+RUN PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 yarn workspace server install --prod --frozen-lockfile
 RUN npx playwright install --with-deps chromium
 
-COPY --from=builder /home/node/build/build .
-COPY --from=builder /home/node/build/public ./public
-COPY --from=builder /home/node/build/views ./views
+WORKDIR /home/node/app/packages/server
+
+# Copy server code
+COPY --from=builder /home/node/build/packages/server/dist .
+
+# Copy bundle and assets
+COPY --from=builder /home/node/build/packages/server/public ./public
 
 EXPOSE 8080
 

@@ -6,7 +6,7 @@
   "author": "sipe90",
   "scripts": {
     "dev": "concurrently \"yarn workspace server dev\" \"yarn workspace frontend dev\"",
-    "build": "yarn workspace frontend build",
+    "build": "yarn workspaces run build",
     "start": "yarn workspace server start",
     "postversion": "git push && git push --tags"
   },
