@@ -49,7 +49,9 @@ class Scraper {
       year,
       week,
       menus: await Promise.all(
-        scrapers.map(async (venue) => this.scrapeMenu(year, week, venue, force))
+        scrapers
+          .filter(({ enabled }) => enabled)
+          .map(async (venue) => this.scrapeMenu(year, week, venue, force))
       ),
     }
   }

@@ -10,6 +10,7 @@ import zapata from './zapata.js'
 
 export type Venue = {
   id: string
+  enabled: boolean
   name: string
   url: string
   weeklyOnly: boolean
@@ -21,6 +22,7 @@ export type Venue = {
 const venues: Venue[] = [
   {
     id: 'bistro',
+    enabled: true,
     name: 'Bistro En Place',
     url: 'https://www.bistroenplace.fi',
     weeklyOnly: true,
@@ -30,6 +32,7 @@ const venues: Venue[] = [
   },
   {
     id: 'bumma',
+    enabled: true,
     name: 'Bumma',
     url: 'https://www.bumma.fi/lounas',
     weeklyOnly: false,
@@ -39,6 +42,7 @@ const venues: Venue[] = [
   },
   {
     id: 'food-and-co',
+    enabled: true,
     name: 'Food & Co Järvenpää-talo',
     url: 'https://www.compass-group.fi/ravintolat-ja-ruokalistat/foodco/kaupungit/jarvenpaa/jarvenpaa-talo/',
     weeklyOnly: false,
@@ -48,6 +52,7 @@ const venues: Venue[] = [
   },
   {
     id: 'zapata',
+    enabled: true,
     name: 'Cantina Viva Zapata',
     url: 'https://cantinazapata.com/lounas',
     weeklyOnly: false,
@@ -57,6 +62,7 @@ const venues: Venue[] = [
   },
   {
     id: 'huili',
+    enabled: true,
     name: 'Huili',
     url: 'https://www.ravintolahuili.fi/lounas',
     weeklyOnly: false,
@@ -66,6 +72,7 @@ const venues: Venue[] = [
   },
   {
     id: 'huvila',
+    enabled: true,
     name: 'Huvila',
     url: 'https://www.huvilassa.fi/lounas',
     weeklyOnly: false,
@@ -75,6 +82,7 @@ const venues: Venue[] = [
   },
   {
     id: 'pikku-buddha',
+    enabled: true,
     name: 'Pikku Buddha',
     url: 'https://www.ravintolapikkubuddha.com/lounas',
     weeklyOnly: false,
