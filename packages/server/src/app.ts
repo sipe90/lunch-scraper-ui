@@ -7,7 +7,10 @@ import logger from './logger.js'
 import { getMenus, saveMenus } from './menu-service.js'
 import Scraper from './scrape-service.js'
 import scrapeJob from './scrape-job.js'
-import { formatISO } from 'date-fns'
+import { formatISO, setDefaultOptions } from 'date-fns'
+import { fi } from 'date-fns/locale'
+
+setDefaultOptions({ locale: fi, weekStartsOn: 1 })
 
 const host = process.env.HOST ?? 'localhost'
 const port = parseInt(process.env.PORT ?? '8080', 10)

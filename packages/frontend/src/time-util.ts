@@ -1,5 +1,4 @@
 import * as dateFns from 'date-fns'
-import { fi } from 'date-fns/locale'
 import { type Weekday } from './const'
 
 export const getYearAndWeek = (date: Date = new Date()): [number, number] => {
@@ -28,8 +27,7 @@ export const getWeekdayDate = (
   const weekDate = dateFns.parse(
     `${year.toString(10)} ${week.toString(10)}`,
     'R I',
-    new Date(),
-    { weekStartsOn: 1, locale: fi }
+    new Date()
   )
   const weekDayDate = dateFns.setISODay(weekDate, weekday + 1)
 
@@ -42,10 +40,7 @@ export const getWeekdayDateString = (
   weekday: Weekday
 ): string => {
   const weekDayDate = getWeekdayDate(year, week, weekday)
-  const dateStr = dateFns.format(weekDayDate, 'cccc d.M', {
-    weekStartsOn: 1,
-    locale: fi,
-  })
+  const dateStr = dateFns.format(weekDayDate, 'cccc d.M')
 
   return dateStr.charAt(0).toLocaleUpperCase() + dateStr.slice(1)
 }
