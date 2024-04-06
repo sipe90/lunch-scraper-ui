@@ -2,43 +2,33 @@
   "name": "jake-lunch",
   "version": "0.7.0",
   "private": true,
-  "exports": "./build/app.js",
-  "type": "module",
-  "engines": {
-    "node": ">=20.0.0"
-  },
+  "repository": "git@github.com:sipe90/jake-lunch.git",
+  "author": "sipe90",
   "scripts": {
-    "install": "playwright install",
-    "build": "tsc && npm run css",
-    "css": "tailwindcss -i src/tailwind.css -o public/style.css",
-    "css:watch": "tailwindcss --watch -i src/tailwind.css -o public/style.css",
-    "start": "tsx src/app.ts",
-    "start:watch": "tsx watch src/app.ts | pino-pretty -i module -o \"[{module}] {msg}\"",
-    "dev": "concurrently \"npm:css:watch\" \"npm:start:watch\"",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"yarn workspace server dev\" \"yarn workspace frontend dev\"",
+    "build": "yarn workspace frontend build",
+    "start": "yarn workspace server start",
     "postversion": "git push && git push --tags"
   },
   "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
   "dependencies": {
-    "@ladjs/graceful": "3.2.2",
-    "croner": "8.0.1",
-    "date-fns": "3.3.1",
-    "express": "4.18.2",
-    "got": "14.2.1",
-    "playwright": "1.41.2",
-    "pug": "3.0.2",
-    "pino": "8.18.0",
-    "remeda": "1.46.0"
+    "date-fns": "3.6.0",
+    "remeda": "1.56.0"
   },
   "devDependencies": {
-    "@tsconfig/node20": "20.1.2",
-    "@types/express": "4.17.21",
-    "@types/node": "20.11.20",
-    "@types/pug": "2.0.10",
+    "@eslint/js": "9.0.0",
+    "@typescript-eslint/eslint-plugin": "7.5.0",
+    "@typescript-eslint/parser": "7.5.0",
     "concurrently": "8.2.2",
-    "pino-pretty": "10.3.1",
-    "tailwindcss": "3.4.1",
-    "typescript": "5.3.3",
-    "tsx": "4.7.1"
+    "eslint": "8.57.0",
+    "eslint-config-xo-typescript": "4.0.0",
+    "eslint-config-prettier": "9.1.0",
+    "globals": "15.0.0",
+    "prettier": "3.2.5",
+    "typescript": "5.4.4",
+    "typescript-eslint": "7.5.0"
   }
 }
