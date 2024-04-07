@@ -1,10 +1,17 @@
 import { type HtmlScrape } from '../scrape-service.js'
 import logger from '../logger.js'
-import { getWeek } from '../util/time-util.js'
+import {
+  getIsoWeek,
+  getShortDateStr,
+  getWeekdayDates,
+} from '../util/time-util.js'
 import { type MenuItem } from '../menu-service.js'
-
-import * as R from 'remeda'
-import { clampWeekMenu, openPage, sanitizeString } from '../util/scrape-util.js'
+import {
+  clampWeekMenu,
+  openPage,
+  processPromises,
+  sanitizeString,
+} from '../util/scrape-util.js'
 
 const log = logger('scraper:huili')
 
@@ -22,63 +29,51 @@ const scrape: HtmlScrape = async (context, url) => {
       const priceText = await priceItem.innerText()
       return parsePrice(priceText)
     })
-  )
+  ).catch((err) => {
+    log.error(err, 'Failed to scrape menu prices')
+    return []
+  })
 
-  const menuSectionLocators = await page
-    .locator('p', { hasText: `Vko ${getWeek()}` })
-    .locator('~ ul')
-    .all()
-  let weekMenu: MenuItem[][] = await Promise.all(
-    menuSectionLocators.map(async (menuSection) => {
-      const menuItemLocator = await menuSection.locator('li').all()
-      return Promise.all(
-        menuItemLocator.map(async (menuItem, i) => {
+  const menuStartLocator = page.locator('p', { hasText: `Vko ${getIsoWeek()}` })
+
+  const weekMenuPromises = getWeekdayDates().map(async (wekdayDate, i) => {
+    const menuSectionLocators = await menuStartLocator
+      .locator('~ p', { hasText: getShortDateStr(wekdayDate) })
+      .locator('+ ul, + ul + ul')
+      .all()
+
+    const itemSectionPromises = menuSectionLocators.map(
+      async (menuSection, j) => {
+        const menuItemLocator = await menuSection.locator('li').all()
+        const itemPromises = menuItemLocator.map(async (menuItem, k) => {
           const name = sanitizeString(await menuItem.innerText())
-          const price = prices[i]
+          const price = prices[j + k]
 
-          return { name, price, description: undefined }
+          return { name, price, description: undefined } satisfies MenuItem
         })
-      )
-    })
-  )
 
-  if (weekMenu.length != 5) {
-    log.warn(
-      'Found an unexpected number of elements in weekday menu (%d != 5)',
-      weekMenu.length
+        return processPromises(itemPromises, (err, k) => {
+          log.warn(
+            err,
+            'Failed to process menu item (day: %d, idx: %d:%d)',
+            i,
+            j,
+            k
+          )
+        })
+      }
     )
 
-    if (weekMenu.length > 5) {
-      log.warn(
-        'Trying to combine incomplete menus to form five menus: [%s]',
-        weekMenu.map((m) => m.length)
-      )
-      const expectedItems = R.maxBy(weekMenu, (menu) => menu.length)!.length
+    const itemSections = await processPromises(itemSectionPromises, (err) => {
+      log.warn(err, 'lol')
+    })
 
-      weekMenu = weekMenu.reduce<MenuItem[][]>((acc, menu) => {
-        if (menu.length < 5) {
-          const prevMenu: MenuItem[] = acc[acc.length - 1]
-          if (
-            prevMenu.length < expectedItems &&
-            prevMenu.length + menu.length <= expectedItems
-          ) {
-            return acc.slice(0, -1).concat([prevMenu.concat(menu)])
-          }
-        }
+    return itemSections.flat()
+  })
 
-        return acc.concat([menu])
-      }, [])
-
-      if (weekMenu.length == 5) {
-        log.info('Menus combined successfully')
-      } else {
-        log.warn(
-          'Failed to combine menus, result is likely to be incorrect: [%s]',
-          weekMenu.map((m) => m.length)
-        )
-      }
-    }
-  }
+  const weekMenu = await processPromises(weekMenuPromises, (err, i) => {
+    log.warn(err, 'Failed to process day menu (day %d)', i)
+  })
 
   log.info('Scrape complete')
 

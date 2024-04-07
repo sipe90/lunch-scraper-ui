@@ -16,6 +16,9 @@ export const openPage = async (context: BrowserContext, url: string) => {
   return page
 }
 
+export const initWeekMenu = (): MenuItem[][] =>
+  R.times(5, R.constant<MenuItem[]>([]))
+
 export const processPromises = async <T>(
   promises: Array<Promise<T>>,
   onRejected?: (reason: unknown, idx: number) => void

@@ -1,4 +1,4 @@
-import { getYear, getWeek } from './util/time-util.js'
+import { getIsoYear, getIsoWeek } from './util/time-util.js'
 
 export enum Weekday {
   MONDAY = 0,
@@ -38,7 +38,7 @@ export type MenuItem = {
   description: string | undefined
 }
 
-let menus: Menus = { year: getYear(), week: getWeek(), menus: [] }
+let menus: Menus = { year: getIsoYear(), week: getIsoWeek(), menus: [] }
 
 export const getMenus = (): Menus => {
   return menus

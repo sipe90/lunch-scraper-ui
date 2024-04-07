@@ -1,10 +1,10 @@
 import got from 'got'
 
 import { type ApiScrape } from '../scrape-service.js'
-import { getIsoDateStr } from '../util/time-util.js'
+import { getIsoDateStr, getWeekday, parseIsoDate } from '../util/time-util.js'
 import { type MenuItem } from '../menu-service.js'
 import logger from '../logger.js'
-import { clampWeekMenu } from '../util/scrape-util.js'
+import { clampWeekMenu, initWeekMenu } from '../util/scrape-util.js'
 
 const log = logger('scraper:food-and-co')
 
@@ -46,18 +46,21 @@ const scrape: ApiScrape = async () => {
 
   let buffetPrice: string | undefined
 
-  const weekMenu = response.menus.map(({ menuPackages }) => {
+  const weekMenu = initWeekMenu()
+
+  response.menus.forEach(({ date, menuPackages }) => {
+    const weekday = getWeekday(parseIsoDate(date))
     const menuPackage = menuPackages.find((mp) => mp.meals.length)
 
     if (!menuPackage) {
-      return []
+      return (weekMenu[weekday] = [])
     }
 
     if (buffetPrice == undefined && menuPackage.name.length) {
       buffetPrice = parsePrice(menuPackage.name)
     }
 
-    return menuPackage.meals.map(
+    weekMenu[weekday] = menuPackage.meals.map(
       ({ name }): MenuItem => ({
         name,
         price: undefined,
@@ -65,13 +68,6 @@ const scrape: ApiScrape = async () => {
       })
     )
   })
-
-  if (weekMenu.length != 5) {
-    log.warn(
-      'Found an unexpected number of elements in weekday menu (%d != 5)',
-      weekMenu.length
-    )
-  }
 
   log.info('Scrape complete')
 
