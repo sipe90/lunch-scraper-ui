@@ -3,6 +3,14 @@ import * as R from 'remeda'
 import { type MenuItem, type WeekMenuArray } from '../menu-service.js'
 import { type BrowserContext } from 'playwright'
 
+export const promiseChain = async <T>(promises: Array<() => Promise<T>>) => {
+  return promises.reduce(
+    async (chain, c) =>
+      chain.then(async (res) => c().then((cur) => [...res, cur])),
+    Promise.resolve<T[]>([])
+  )
+}
+
 export const openPage = async (context: BrowserContext, url: string) => {
   const page = await context.newPage()
   const pageResponse = (await page.goto(url))!

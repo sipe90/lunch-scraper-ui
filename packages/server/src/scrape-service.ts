@@ -9,6 +9,7 @@ import {
 } from './menu-service.js'
 import logger from './logger.js'
 import { getYearAndWeek } from './util/time-util.js'
+import { promiseChain } from './util/scrape-util.js'
 
 export type ScrapeResult = {
   weekMenu: WeekMenuArray | undefined
@@ -45,14 +46,17 @@ class Scraper {
     log.info('Scraping all menus (force=%s)', force)
     const [year, week] = getYearAndWeek()
 
+    const enabledVenues = scrapers.filter(({ enabled }) => enabled)
+    const scrapePromises = enabledVenues.map(
+      (v) => async () => this.scrapeMenu(year, week, v, force)
+    )
+
+    const menus = await promiseChain(scrapePromises)
+
     return {
       year,
       week,
-      menus: await Promise.all(
-        scrapers
-          .filter(({ enabled }) => enabled)
-          .map(async (venue) => this.scrapeMenu(year, week, venue, force))
-      ),
+      menus,
     }
   }
 
