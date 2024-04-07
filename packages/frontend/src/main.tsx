@@ -9,7 +9,9 @@ import './index.css'
 
 setDefaultOptions({ locale: fi, weekStartsOn: 1 })
 
-const router = createBrowserRouter(routes)
+const router = createBrowserRouter(routes, {
+  basename: import.meta.env.BASE_URL,
+})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
