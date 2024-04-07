@@ -8,7 +8,7 @@ const Root: FC = () => {
   const [menus, setMenus] = useState<Menus | undefined>(undefined)
 
   useEffect(() => {
-    fetch('/api/menus')
+    fetch(`${import.meta.env.BASE_URL}api/menus`)
       .then(async (res) => res.json())
       .then((m: Menus) => {
         setMenus(m)
