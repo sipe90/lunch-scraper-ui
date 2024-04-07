@@ -132,4 +132,4 @@ dist
 # Other
 build
 data
-public/style.css
+packages/server/public

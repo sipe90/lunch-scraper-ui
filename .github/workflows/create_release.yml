@@ -39,11 +39,11 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
       - name: Create release candidate
-        if:  ${{ github.event.inputs.type == 'candidate' }} 
+        if: ${{ github.event.inputs.type == 'candidate' }}
         run: npm version --preid rc prerelease -m "[npm] Release candidate %s"
       - name: Create final release
-        if:  ${{ github.event.inputs.type == 'final' }} 
+        if: ${{ github.event.inputs.type == 'final' }}
         run: npm version ${{ github.event.inputs.scope }} -m "[npm] Release %s"
       - name: Create custom release
-        if:  ${{ github.event.inputs.type == 'custom' }} 
+        if: ${{ github.event.inputs.type == 'custom' }}
         run: npm version --allow-same-version ${{ github.event.inputs.version }} -m "[npm] Release %s"
