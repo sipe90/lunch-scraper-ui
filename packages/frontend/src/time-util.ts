@@ -1,5 +1,5 @@
 import * as dateFns from 'date-fns'
-import { type Weekday } from './const'
+import { Weekday } from './const'
 
 export const getYearAndWeek = (date: Date = new Date()): [number, number] => {
   return [getYear(date), getWeek(date)]
@@ -43,4 +43,14 @@ export const getWeekdayDateString = (
   const dateStr = dateFns.format(weekDayDate, 'cccc d.M')
 
   return dateStr.charAt(0).toLocaleUpperCase() + dateStr.slice(1)
+}
+
+export const getWeekDateRangeString = (year: number, week: number): string => {
+  const mondayDate = getWeekdayDate(year, week, Weekday.MONDAY)
+  const fridayDate = getWeekdayDate(year, week, Weekday.FRIDAY)
+
+  return (
+    dateFns.format(mondayDate, 'dd.-') +
+    dateFns.format(fridayDate, 'dd.MM.yyyy')
+  )
 }
