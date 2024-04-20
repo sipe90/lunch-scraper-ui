@@ -12,8 +12,9 @@ COPY packages/server/package.json ./packages/server/package.json
 
 RUN PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 yarn install --frozen-lockfile
 
-# Copy configuration files
+# Copy configuration files and assets
 COPY packages/frontend/index.html ./packages/frontend/index.html
+COPY packages/frontend/assets ./packages/frontend/assets
 COPY packages/frontend/*.config.* ./packages/frontend/
 COPY packages/frontend/tsconfig.json ./packages/frontend/tsconfig.json
 
