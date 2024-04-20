@@ -1,7 +1,8 @@
 import * as R from 'remeda'
+import got from 'got'
+import * as cheerio from 'cheerio'
 
 import { type MenuItem, type WeekMenuArray } from '../menu-service.js'
-import { type BrowserContext } from 'playwright'
 
 export const promiseChain = async <T>(promises: Array<() => Promise<T>>) => {
   return promises.reduce(
@@ -11,17 +12,37 @@ export const promiseChain = async <T>(promises: Array<() => Promise<T>>) => {
   )
 }
 
-export const openPage = async (context: BrowserContext, url: string) => {
-  const page = await context.newPage()
-  const pageResponse = (await page.goto(url))!
+export const loadPage = async (url: string): Promise<cheerio.CheerioAPI> => {
+  const response = await got(url)
 
-  if (!pageResponse.ok()) {
+  if (response.statusCode !== 200) {
     throw new Error(
-      `Failed to scrape ${url}. Server returned a non-OK response: ${pageResponse.statusText()}`
+      `Failed to scrape ${url}. Server returned a non-OK response: (${response.statusCode}) ${response.statusMessage}`
     )
   }
 
-  return page
+  const $ = cheerio.load(response.body)
+
+  $.prototype.hasText = function <T extends cheerio.AnyNode>(
+    this: cheerio.Cheerio<T>,
+    text: string
+  ) {
+    return this.filter((_, el) =>
+      this._make(el).text().toLowerCase().includes(text.toLowerCase())
+    )
+  }
+
+  $.prototype.hasNotText = function <T extends cheerio.AnyNode>(
+    this: cheerio.Cheerio<T>,
+    text: string
+  ) {
+    return this.filter(
+      (_, el) =>
+        !this._make(el).text().toLowerCase().includes(text.toLowerCase())
+    )
+  }
+
+  return $
 }
 
 export const initWeekMenu = (): MenuItem[][] =>

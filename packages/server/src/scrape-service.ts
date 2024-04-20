@@ -1,4 +1,3 @@
-import { type Browser, type BrowserContext, chromium } from 'playwright'
 import scrapers, { type Venue } from './scrapers/index.js'
 import { loadMenu, saveMenu } from './storage-service.js'
 import {
@@ -12,35 +11,25 @@ import { getYearAndWeek } from './util/time-util.js'
 import { promiseChain } from './util/scrape-util.js'
 
 export type ScrapeResult = {
-  weekMenu: WeekMenuArray | undefined
-  allWeekMenu: MenuItem[] | undefined
-  buffetPrice: string | undefined
+  weekMenu?: WeekMenuArray
+  allWeekMenu?: MenuItem[]
+  buffetPrice?: string
 }
 
-export type HtmlScrape = (
-  context: BrowserContext,
-  url: string
-) => Promise<ScrapeResult>
-export type ApiScrape = () => Promise<ScrapeResult>
-
-export type ScrapeFunction = HtmlScrape | ApiScrape
+export type ScrapeFunction = (url: string) => Promise<ScrapeResult>
 
 const log = logger('scrape-service')
 
 class Scraper {
   static getInstance = async () => {
     if (this.instance == null) {
-      log.info('Opening headless chromium browser')
-      const browser = await chromium.launch({ headless: true, timeout: 10000 })
-      this.instance = new Scraper(browser)
+      this.instance = new Scraper()
     }
 
     return this.instance
   }
 
   private static instance: Scraper
-
-  private constructor(readonly browser: Browser) {}
 
   public scrapeMenus = async (force = false): Promise<Menus> => {
     log.info('Scraping all menus (force=%s)', force)
@@ -58,11 +47,6 @@ class Scraper {
       week,
       menus,
     }
-  }
-
-  public close = async (): Promise<void> => {
-    log.info('Closing browser')
-    await this.browser.close()
   }
 
   private async scrapeMenu(
@@ -84,7 +68,7 @@ class Scraper {
   }
 
   private async doScrape(venue: Venue): Promise<Menu> {
-    const { id, url, scraperType, scraper, name, weeklyOnly, buffet } = venue
+    const { id, url, scraper, name, weeklyOnly, buffet } = venue
 
     let scrapeResult: ScrapeResult = {
       buffetPrice: undefined,
@@ -93,11 +77,7 @@ class Scraper {
     }
 
     try {
-      if (scraperType == 'api') {
-        scrapeResult = await this.scrapeApi(scraper as ApiScrape)
-      } else {
-        scrapeResult = await this.scrapeHtml(venue)
-      }
+      scrapeResult = await scraper(url)
     } catch (err) {
       log.error(err, 'Failed to scrape %s', id)
     }
@@ -112,27 +92,6 @@ class Scraper {
       buffetPrice,
       weekMenu,
       allWeekMenu,
-    }
-  }
-
-  private async scrapeApi(scraper: ApiScrape) {
-    return scraper()
-  }
-
-  private async scrapeHtml(venue: Venue) {
-    const { id, url, scraper } = venue
-
-    log.debug('Opening a new browser context for scraping %s', id)
-
-    const context = await this.browser.newContext()
-    context.setDefaultTimeout(2000)
-    context.setDefaultNavigationTimeout(30000)
-
-    try {
-      return await scraper(context, url)
-    } finally {
-      log.debug('Closing browser page after scraping %s', id)
-      await context.close()
     }
   }
 }

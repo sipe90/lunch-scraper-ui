@@ -8,7 +8,6 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "install": "playwright install",
     "build": "tsc",
     "start": "tsx src/app.ts",
     "dev": "tsx --watch src/app.ts | pino-pretty -i module -o \"[{module}] {msg}\"",
@@ -18,10 +17,10 @@
   "license": "MIT",
   "dependencies": {
     "@ladjs/graceful": "3.2.2",
+    "cheerio": "1.0.0-rc.12",
     "croner": "8.0.1",
     "express": "4.18.2",
     "got": "14.2.1",
-    "playwright": "1.41.2",
     "pino": "8.18.0"
   },
   "devDependencies": {

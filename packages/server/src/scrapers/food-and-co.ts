@@ -1,6 +1,6 @@
 import got from 'got'
 
-import { type ApiScrape } from '../scrape-service.js'
+import { type ScrapeFunction } from '../scrape-service.js'
 import { getIsoDateStr, getWeekday, parseIsoDate } from '../util/time-util.js'
 import { type MenuItem } from '../menu-service.js'
 import logger from '../logger.js'
@@ -31,7 +31,9 @@ type WeekMenusResponse = {
 
 const apiEndpoint = 'https://www.compass-group.fi/menuapi/week-menus'
 
-const scrape: ApiScrape = async () => {
+const scrape: ScrapeFunction = async () => {
+  log.info('Starting scrape')
+
   const searchParams = {
     costCenter: '3050',
     language: 'fi',
@@ -61,11 +63,7 @@ const scrape: ApiScrape = async () => {
     }
 
     weekMenu[weekday] = menuPackage.meals.map(
-      ({ name }): MenuItem => ({
-        name,
-        price: undefined,
-        description: undefined,
-      })
+      ({ name }): MenuItem => ({ name })
     )
   })
 
@@ -74,7 +72,6 @@ const scrape: ApiScrape = async () => {
   return {
     buffetPrice,
     weekMenu: clampWeekMenu(weekMenu),
-    allWeekMenu: undefined,
   }
 }
 

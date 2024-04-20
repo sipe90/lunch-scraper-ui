@@ -1,5 +1,5 @@
 # Build builder image
-FROM node:20 AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /home/node/build
 
@@ -10,7 +10,7 @@ COPY yarn.lock .
 COPY packages/frontend/package.json ./packages/frontend/package.json
 COPY packages/server/package.json ./packages/server/package.json
 
-RUN PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile
 
 # Copy configuration files and assets
 COPY packages/frontend/index.html ./packages/frontend/index.html
@@ -27,7 +27,7 @@ COPY packages/server/src ./packages/server/src
 RUN yarn build
 
 # Build production image
-FROM node:20
+FROM node:20-alpine
 
 ENV NODE_ENV production
 
@@ -39,8 +39,7 @@ COPY --from=builder /home/node/build/yarn.lock .
 
 COPY --from=builder /home/node/build/packages/server/package.json ./packages/server/package.json
 
-RUN PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 yarn workspace server install --prod --frozen-lockfile
-RUN npx playwright install --with-deps chromium
+RUN yarn workspace server install --prod --frozen-lockfile
 
 WORKDIR /home/node/app/packages/server
 

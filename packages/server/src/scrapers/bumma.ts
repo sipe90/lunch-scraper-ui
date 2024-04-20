@@ -1,42 +1,33 @@
-import { type HtmlScrape } from '../scrape-service.js'
+import { type ScrapeFunction } from '../scrape-service.js'
 import logger from '../logger.js'
 import { type MenuItem } from '../menu-service.js'
-import {
-  clampWeekMenu,
-  processPromises,
-  openPage,
-  sanitizeString,
-} from '../util/scrape-util.js'
+import { clampWeekMenu, loadPage } from '../util/scrape-util.js'
 
 const log = logger('scraper:bumma')
 
-const scrape: HtmlScrape = async (context, url) => {
-  log.info('Opening a new page and navigating to %s', url)
-  const page = await openPage(context, url)
+const scrape: ScrapeFunction = async (url) => {
+  log.info('Starting scrape')
+  log.info('Loading lunch menu page from URL %s', url)
 
-  const menuSectionLocators = await page.locator('.menu-section').all()
-  const weekMenuPromises = menuSectionLocators.map(async (menuSection, i) => {
-    const menuItemLocator = await menuSection.locator('.menu-item').all()
-    const itemPromises = menuItemLocator.map(async (menuItem) => {
-      const nameLocator = menuItem.locator('.menu-item-title')
-      const priceLocator = menuItem.locator('.menu-item-price-bottom')
-      const descriptionLocator = menuItem.locator('.menu-item-description')
+  const $ = await loadPage(url)
 
-      const name = sanitizeString(await nameLocator.innerText())
-      const price = sanitizeString(await priceLocator.innerText())
-      const description = sanitizeString(await descriptionLocator.innerText())
+  const weekMenu = $('.menu-section')
+    .map((i, menuSection) => {
+      const menuItems = $('.menu-item', menuSection).map((j, menuItem) => {
+        try {
+          const name = $('.menu-item-title', menuItem).text()
+          const price = $('.menu-item-price-bottom', menuItem).text()
+          const description = $('.menu-item-description', menuItem).text()
 
-      return { name, price, description } satisfies MenuItem
+          return { name, price, description } satisfies MenuItem
+        } catch (err) {
+          log.warn(err, 'Failed to scrape menu item (day: %d, idx: %d)', i, j)
+        }
+      })
+
+      return [menuItems.toArray()]
     })
-
-    return processPromises(itemPromises, (err, j) => {
-      log.warn(err, 'Failed to process menu item (day: %d, idx: %d)', i, j)
-    })
-  })
-
-  const weekMenu = await processPromises(weekMenuPromises, (err, i) => {
-    log.warn(err, 'Failed to process day menu (day %d)', i)
-  })
+    .toArray()
 
   if (weekMenu.length != 5) {
     log.warn(
@@ -47,11 +38,7 @@ const scrape: HtmlScrape = async (context, url) => {
 
   log.info('Scrape complete')
 
-  return {
-    buffetPrice: undefined,
-    weekMenu: clampWeekMenu(weekMenu),
-    allWeekMenu: undefined,
-  }
+  return { weekMenu: clampWeekMenu(weekMenu) }
 }
 
 export default scrape
