@@ -4,47 +4,68 @@ import {
   createContext,
   useCallback,
   useContext,
+  useState,
 } from 'react'
 import { type MenuItem, type DayMenu, type WeekMenu, type Menus } from './types'
-import { type Weekday } from './const'
+import { Weekday } from './const'
 
-type MenuContextType = {
+type AppContextType = {
+  loading: boolean
   year: number
   week: number
   menus: WeekMenu[] | undefined
+  selectedDay: Weekday
+  setSelectedDay: (day: Weekday) => void
   getDayMenus: (day: Weekday) => DayMenu[] | undefined
 }
 
-const defaultValue: MenuContextType = {
+const defaultValue: AppContextType = {
+  loading: true,
   year: 0,
   week: 0,
   menus: undefined,
+  selectedDay: Weekday.MONDAY,
+  setSelectedDay: () => undefined,
   getDayMenus: () => undefined,
 }
 
-const MenuContext = createContext<MenuContextType>(defaultValue)
+const AppContext = createContext<AppContextType>(defaultValue)
 
 type MenuProviderProps = {
   allMenus: Menus | undefined
+  loading: boolean
 }
 
 export const MenuProvider: FC<PropsWithChildren<MenuProviderProps>> = ({
   allMenus,
+  loading,
   children,
 }) => {
   const { year = 0, week = 0, menus } = allMenus ?? {}
 
+  const [selectedDay, setSelectedDay] = useState(Weekday.MONDAY)
+
   const getDayMenus = useCallback(_getDayMenus(menus), [menus])
 
   return (
-    <MenuContext.Provider value={{ year, week, menus, getDayMenus }}>
+    <AppContext.Provider
+      value={{
+        loading,
+        year,
+        week,
+        menus,
+        selectedDay,
+        setSelectedDay,
+        getDayMenus,
+      }}
+    >
       {children}
-    </MenuContext.Provider>
+    </AppContext.Provider>
   )
 }
 
-export const useWeekMenus = () => {
-  return useContext(MenuContext)
+export const useAppContext = () => {
+  return useContext(AppContext)
 }
 
 const _getDayMenus =

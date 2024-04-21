@@ -1,18 +1,13 @@
 import { type FC } from 'react'
-import { type Weekday } from '../const'
-import { useWeekMenus } from '../menu-context'
+import { useAppContext } from '../app-context'
 import DayMenu from '../components/DayMenu'
 
-type DayMenusProps = {
-  weekday: Weekday
-}
+const DayMenus: FC = () => {
+  const { loading, getDayMenus, selectedDay } = useAppContext()
 
-const DayMenus: FC<DayMenusProps> = ({ weekday }) => {
-  const { getDayMenus } = useWeekMenus()
+  const dayMenus = getDayMenus(selectedDay)
 
-  const dayMenus = getDayMenus(weekday)
-
-  if (dayMenus == null) {
+  if (loading || dayMenus == null) {
     return null
   }
 
