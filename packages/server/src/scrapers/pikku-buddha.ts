@@ -1,10 +1,10 @@
-import { type HtmlScrape } from '../scrape-service.js'
+import { type ScrapeFunction } from '../scrape-service.js'
 import logger from '../logger.js'
 import { type MenuItem } from '../menu-service.js'
 import {
   clampWeekMenu,
+  loadPage,
   nameAndPriceParser,
-  openPage,
   processPromises,
   sanitizeString,
 } from '../util/scrape-util.js'
@@ -15,41 +15,37 @@ const parseNameAndPrice = nameAndPriceParser(/^\d\. *(.+) +(\d+(?:,\d+)?) *€$/
 
 const paths = ['maanantai', 'tiistai', 'keskiviikko', 'torstai', 'perjantai']
 
-const scrape: HtmlScrape = async (context, url) => {
-  const weekMenuPromises = paths.map(async (weekDay, i) => {
+const scrape: ScrapeFunction = async (url) => {
+  log.info('Starting scrape')
+  const weekMenuPromises = paths.map(async (weekDay) => {
     const dayUrl = `${url}/${weekDay}`
-    log.info('Opening a new page and navigating to %s', dayUrl)
+    log.info('Loading lunch menu page from URL %s', dayUrl)
+    const $ = await loadPage(dayUrl)
 
-    const page = await openPage(context, dayUrl)
+    const menuItems = $('h1')
+      .siblings('p')
+      .slice(2)
+      .map((_, el) => {
+        const text = $(el).text()
+        const nameAndPrice = $('strong', el).text()
 
-    const menuItemLocator = await page
-      .locator('h1', { hasText: 'lounaslista' })
-      .locator('~ p:nth-of-type(n+3)')
-      .all()
-    const menuItemPromises = menuItemLocator.map(async (menuItem) => {
-      const innerText = await menuItem.innerText()
-      const nameAndPriceLocator = menuItem.locator(':nth-child(1)')
-
-      const nameAndPrice = await nameAndPriceLocator.innerText()
-      const description = sanitizeString(
-        innerText.substring(
-          nameAndPrice.length,
-          innerText.indexOf('.', nameAndPrice.length) + 1
+        const description = sanitizeString(
+          text.substring(
+            nameAndPrice.length,
+            text.indexOf('.', nameAndPrice.length) + 1
+          )
         )
-      )
 
-      const [name, price] = parseNameAndPrice(sanitizeString(nameAndPrice))
+        const [name, price] = parseNameAndPrice(sanitizeString(nameAndPrice))
 
-      return {
-        name,
-        price,
-        description,
-      } satisfies MenuItem
-    })
+        return {
+          name,
+          price,
+          description,
+        } satisfies MenuItem
+      })
 
-    return processPromises(menuItemPromises, (err, j) => {
-      log.warn(err, 'Failed to process menu item (day: %d, idx: %d)', i, j)
-    })
+    return menuItems.toArray()
   })
 
   const weekMenu = await processPromises(weekMenuPromises, (err, i) => {
@@ -65,11 +61,7 @@ const scrape: HtmlScrape = async (context, url) => {
 
   log.info('Scrape complete')
 
-  return {
-    buffetPrice: undefined,
-    weekMenu: clampWeekMenu(weekMenu),
-    allWeekMenu: undefined,
-  }
+  return { weekMenu: clampWeekMenu(weekMenu) }
 }
 
 export default scrape

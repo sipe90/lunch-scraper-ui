@@ -1,4 +1,4 @@
-import { type HtmlScrape } from '../scrape-service.js'
+import { type ScrapeFunction } from '../scrape-service.js'
 import logger from '../logger.js'
 import {
   getIsoWeek,
@@ -6,82 +6,53 @@ import {
   getWeekdayDates,
 } from '../util/time-util.js'
 import { type MenuItem } from '../menu-service.js'
-import {
-  clampWeekMenu,
-  openPage,
-  processPromises,
-  sanitizeString,
-} from '../util/scrape-util.js'
+import { clampWeekMenu, loadPage, sanitizeString } from '../util/scrape-util.js'
 
 const log = logger('scraper:huili')
 
-const scrape: HtmlScrape = async (context, url) => {
-  log.info('Opening a new page and navigating to %s', url)
-  const page = await openPage(context, url)
+const scrape: ScrapeFunction = async (url) => {
+  log.info('Starting scrape')
+  log.info('Loading lunch menu page from URL %s', url)
 
-  const pricesListLocator = page.locator('ul', { hasText: '€' })
-  const pricesLocator = await pricesListLocator
-    .locator(':nth-child(-n+5 of li)')
-    .all()
+  const $ = await loadPage(url)
 
-  const prices = await Promise.all(
-    pricesLocator.map(async (priceItem) => {
-      const priceText = await priceItem.innerText()
-      return parsePrice(priceText)
-    })
-  ).catch((err) => {
-    log.error(err, 'Failed to scrape menu prices')
-    return []
-  })
-
-  const menuStartLocator = page.locator('p', { hasText: `Vko ${getIsoWeek()}` })
-
-  const weekMenuPromises = getWeekdayDates().map(async (wekdayDate, i) => {
-    const menuSectionLocators = await menuStartLocator
-      .locator('~ p', { hasText: getShortDateStr(wekdayDate) })
-      .locator('+ ul, + ul + ul')
-      .all()
-
-    const itemSectionPromises = menuSectionLocators.map(
-      async (menuSection, j) => {
-        const menuItemLocator = await menuSection.locator('li').all()
-        const itemPromises = menuItemLocator.map(async (menuItem, k) => {
-          const name = sanitizeString(await menuItem.innerText())
-          const price = prices[j + k]
-
-          return { name, price, description: undefined } satisfies MenuItem
-        })
-
-        return processPromises(itemPromises, (err, k) => {
-          log.warn(
-            err,
-            'Failed to process menu item (day: %d, idx: %d:%d)',
-            i,
-            j,
-            k
-          )
-        })
+  const prices = $('ul')
+    .hasText('€')
+    .children()
+    .slice(0, 5)
+    .map((i, el) => {
+      try {
+        return parsePrice($(el).text())
+      } catch (err) {
+        log.warn(err, 'Failed to parse price (idx: %d)', i)
       }
-    )
+    })
+    .toArray()
 
-    const itemSections = await processPromises(itemSectionPromises, (err) => {
-      log.warn(err, 'lol')
+  const menuStart = $('p').hasText(`Vko ${getIsoWeek()}`)
+
+  const weekMenu = getWeekdayDates().map((weekdayDate) => {
+    const menuSections = $('~ p', menuStart)
+      .hasText(getShortDateStr(weekdayDate))
+      .nextUntil('p', 'ul')
+
+    const itemSections = menuSections.map((j, menuSection) => {
+      const menuItems = $('li', menuSection).map((k, menuItem) => {
+        const name = sanitizeString($(menuItem).text())
+        const price = prices[j + k]
+
+        return { name, price } satisfies MenuItem
+      })
+
+      return menuItems.toArray()
     })
 
-    return itemSections.flat()
-  })
-
-  const weekMenu = await processPromises(weekMenuPromises, (err, i) => {
-    log.warn(err, 'Failed to process day menu (day %d)', i)
+    return itemSections.toArray()
   })
 
   log.info('Scrape complete')
 
-  return {
-    buffetPrice: undefined,
-    weekMenu: clampWeekMenu(weekMenu),
-    allWeekMenu: undefined,
-  }
+  return { weekMenu: clampWeekMenu(weekMenu) }
 }
 
 const parsePrice = (priceText: string) => {

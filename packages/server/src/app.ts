@@ -62,7 +62,6 @@ const graceful = new (Graceful as unknown as typeof Graceful.default)({
     () => {
       scrapeCron.stop()
     },
-    async () => scraper.close(),
   ],
   logger: logger('graceful'),
 })

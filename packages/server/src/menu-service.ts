@@ -19,9 +19,9 @@ export type Menu = {
   url: string
   weeklyOnly: boolean
   buffet: boolean
-  buffetPrice: string | undefined
-  weekMenu: WeekMenuArray | undefined
-  allWeekMenu: MenuItem[] | undefined
+  buffetPrice?: string
+  weekMenu?: WeekMenuArray
+  allWeekMenu?: MenuItem[]
 }
 
 export type WeekMenuArray = [
@@ -34,8 +34,8 @@ export type WeekMenuArray = [
 
 export type MenuItem = {
   name: string
-  price: string | undefined
-  description: string | undefined
+  price?: string
+  description?: string
 }
 
 let menus: Menus = { year: getIsoYear(), week: getIsoWeek(), menus: [] }

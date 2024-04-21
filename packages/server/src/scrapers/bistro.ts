@@ -1,9 +1,8 @@
-import { type HtmlScrape } from '../scrape-service.js'
+import { type ScrapeFunction } from '../scrape-service.js'
 import logger from '../logger.js'
 import {
+  loadPage,
   nameAndPriceParser,
-  openPage,
-  processPromises,
   sanitizeString,
 } from '../util/scrape-util.js'
 import { type MenuItem } from '../menu-service.js'
@@ -12,39 +11,34 @@ const log = logger('scraper:bistro')
 
 const parseNameAndPrice = nameAndPriceParser(/^(.+) (\d+(?:,\d+)?)$/)
 
-const scrape: HtmlScrape = async (context, url) => {
-  log.info('Opening a new page and navigating to %s', url)
-  const page = await openPage(context, url)
+const scrape: ScrapeFunction = async (url) => {
+  log.info('Starting scrape')
+  log.info('Loading lunch menu page from URL %s', url)
 
-  const menuSectionLocator = page.locator('.menu-section').first()
-  const menuItemLocator = await menuSectionLocator
-    .locator(':nth-child(n+4 of .menu-item)')
-    .all()
-  const itemPromises = menuItemLocator.map(async (menuItem) => {
-    const nameAndPriceLocator = menuItem.locator('.menu-item-title')
-    const descriptionLocator = menuItem.locator('.menu-item-description')
+  const $ = await loadPage(url)
 
-    const nameAndPrice = sanitizeString(await nameAndPriceLocator.innerText())
-    const description = sanitizeString(
-      await descriptionLocator.innerText().catch(() => '')
-    )
+  const menuSectionLocator = $('.menu-section').first()
 
-    const [name, price] = parseNameAndPrice(nameAndPrice)
+  const allWeekMenu = $(':nth-child(n+4)', menuSectionLocator)
+    .slice(0, -1)
+    .map((i, el) => {
+      const rawNameAndPrice = $('.menu-item-title', el).text()
+      const rawDescription = $('.menu-item-description', el).text()
 
-    return { name, price, description } satisfies MenuItem
-  })
+      try {
+        const [name, price] = parseNameAndPrice(sanitizeString(rawNameAndPrice))
+        const description = sanitizeString(rawDescription)
 
-  const allWeekMenu = await processPromises(itemPromises, (err, i) => {
-    log.warn(err, 'Failed to process menu item (idx: %d)', i)
-  })
+        return { name, price, description } satisfies MenuItem
+      } catch (err) {
+        log.warn(err, 'Failed to scrape menu item (idx: %d)', i)
+      }
+    })
+    .toArray()
 
   log.info('Scrape complete')
 
-  return {
-    buffetPrice: undefined,
-    weekMenu: undefined,
-    allWeekMenu,
-  }
+  return { allWeekMenu }
 }
 
 export default scrape
