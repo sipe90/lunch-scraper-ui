@@ -12,9 +12,9 @@ const DayMenus: FC = () => {
   }
 
   return (
-    <div className="py-4 flex flex-col gap-4">
+    <div className="py-4 flex gap-4 flex-col md:flex-row md:flex-wrap">
       {dayMenus.map((menu, idx) => (
-        <article key={idx}>
+        <article key={idx} className="flex-1 md:min-w-[400px]">
           <h2 className="text-xl md:text-3xl text-green underline">
             <a href={menu.url} target="_blank" rel="noreferrer">
               {menu.venue}
