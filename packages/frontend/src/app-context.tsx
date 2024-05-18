@@ -8,6 +8,7 @@ import {
 } from 'react'
 import { type MenuItem, type DayMenu, type WeekMenu, type Menus } from './types'
 import { Weekday } from './const'
+import { getDayOfWeek } from './time-util'
 
 type AppContextType = {
   loading: boolean
@@ -31,6 +32,8 @@ const defaultValue: AppContextType = {
 
 const AppContext = createContext<AppContextType>(defaultValue)
 
+const currentDay = getDayOfWeek() ?? Weekday.MONDAY
+
 type MenuProviderProps = {
   allMenus: Menus | undefined
   loading: boolean
@@ -43,7 +46,7 @@ export const MenuProvider: FC<PropsWithChildren<MenuProviderProps>> = ({
 }) => {
   const { year = 0, week = 0, menus } = allMenus ?? {}
 
-  const [selectedDay, setSelectedDay] = useState(Weekday.MONDAY)
+  const [selectedDay, setSelectedDay] = useState(currentDay)
 
   const getDayMenus = useCallback(_getDayMenus(menus), [menus])
 

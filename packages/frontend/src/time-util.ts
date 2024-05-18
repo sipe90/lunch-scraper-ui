@@ -15,8 +15,10 @@ export const getYear = (date: Date = new Date()): number =>
 export const getWeek = (date: Date = new Date()): number =>
   dateFns.getISOWeek(date)
 
-export const getDayOfWeek = (date: Date = new Date()): Weekday => {
-  return (dateFns.getISODay(date) - 1) as Weekday
+export const getDayOfWeek = (date: Date = new Date()): Weekday | undefined => {
+  const day = dateFns.getISODay(date) - 1
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+  return day <= Weekday.FRIDAY ? day : undefined
 }
 
 export const getWeekdayDate = (
