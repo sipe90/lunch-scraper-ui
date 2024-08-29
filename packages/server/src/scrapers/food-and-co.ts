@@ -63,7 +63,10 @@ const scrape: ScrapeFunction = async () => {
     }
 
     weekMenu[weekday] = menuPackage.meals.map(
-      ({ name }): MenuItem => ({ name })
+      ({ name, diets }): MenuItem => ({
+        name,
+        diets: diets.filter((d) => ['G', 'L', 'VL'].includes(d)),
+      })
     )
   })
 

@@ -1,9 +1,19 @@
 import { type ScrapeFunction } from '../scrape-service.js'
 import logger from '../logger.js'
 import { type MenuItem } from '../menu-service.js'
-import { clampWeekMenu, loadPage, sanitizeString } from '../util/scrape-util.js'
+import {
+  clampWeekMenu,
+  descriptionParser,
+  loadPage,
+  nameParser,
+  parseDiets,
+  sanitizeString,
+} from '../util/scrape-util.js'
 
 const log = logger('scraper:huvila')
+
+const parseName = nameParser(/^(.*?)(?: ?\(.*\))?$/)
+const parseDescription = descriptionParser(/^(.*?)(?: ?\(.*\))?$/)
 
 const scrape: ScrapeFunction = async (url) => {
   log.info('Starting scrape')
@@ -16,15 +26,19 @@ const scrape: ScrapeFunction = async (url) => {
       const menuItems = $('.menu-item', menuSection)
         .slice(0, -1)
         .map((_, menuItem) => {
-          const name = sanitizeString($('.menu-item-title', menuItem).text())
+          const rawName = $('.menu-item-title', menuItem).text()
+          const rawDescription = $('.menu-item-description', menuItem).text()
+
+          const name = parseName(sanitizeString(rawName))
           const price = sanitizeString(
             $('.menu-item-price-bottom', menuItem).text()
           )
-          const description = sanitizeString(
-            $('.menu-item-description', menuItem).text()
+          const description = parseDescription(sanitizeString(rawDescription))
+          const diets = parseDiets(
+            rawDescription.length ? rawDescription : rawName
           )
 
-          return { name, price, description } satisfies MenuItem
+          return { name, price, description, diets } satisfies MenuItem
         })
 
       return [menuItems.toArray()]

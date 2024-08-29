@@ -63,6 +63,11 @@ export const processPromises = async <T>(
   }, [])
 }
 
+/**
+ * @deprecated
+ * @param regExp
+ * @returns
+ */
 export const nameAndPriceParser =
   (regExp: RegExp) => (nameAndPrice: string) => {
     const match = nameAndPrice.match(regExp)
@@ -90,8 +95,64 @@ export const nameAndPriceParser =
     return [sanitizeString(name), sanitizeString(price)]
   }
 
+const parser =
+  (name: string, regExp: RegExp) =>
+  (str: string): string => {
+    const match = str.match(regExp)
+
+    if (!match) {
+      throw new Error(`Could not parse ${name} from string "${str}"`)
+    }
+
+    const matched = match[1]
+
+    if (!matched) {
+      throw new Error(`Could not parse ${name} from string "${str}"`)
+    }
+
+    return sanitizeString(matched)
+  }
+
+const optionalParser =
+  (regExp: RegExp) =>
+  (str: string): string | undefined => {
+    const match = str.match(regExp)
+
+    if (!match) {
+      return undefined
+    }
+
+    const matched = match[1]
+
+    if (!matched) {
+      return undefined
+    }
+
+    return sanitizeString(matched)
+  }
+
+export const nameParser = (regExp: RegExp) => parser('name', regExp)
+export const priceParser = (regExp: RegExp) => parser('price', regExp)
+export const descriptionParser = (regExp: RegExp) => optionalParser(regExp)
+export const dietsParser = (regExp: RegExp) => optionalParser(regExp)
+
+export const parseDiets = (str: string): string[] => {
+  const match = /\((.*?)\)/g.exec(str)
+
+  return (
+    match
+      ?.at(1)
+      ?.split(',')
+      ?.map((d) => d.trim()) ?? []
+  )
+}
+
 export const sanitizeString = (str: string): string => {
-  return str.trim().replaceAll(/\s+/g, ' ')
+  return str.trim().replaceAll(/[\s\u00A0]+/g, ' ')
+}
+
+export const isEmpty = (str: string): boolean => {
+  return str.replaceAll(/[\s\u00A0]+/g, '').length === 0
 }
 
 export const clampWeekMenu = (weekMenu?: MenuItem[][]): WeekMenuArray => {

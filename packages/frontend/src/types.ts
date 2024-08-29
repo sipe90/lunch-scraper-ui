@@ -34,4 +34,5 @@ export type MenuItem = {
   name: string
   price: string | undefined
   description: string | undefined
+  diets: string[] | undefined
 }

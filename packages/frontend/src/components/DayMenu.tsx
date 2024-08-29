@@ -16,6 +16,9 @@ const DayMenu: FC<DayMenuProps> = ({ title, menu }) => {
             <li key={idx} className="mt-1">
               <div className="font-medium">
                 <span>{item.name}</span>
+                {!!item.diets?.length && (
+                  <span className="ml-1">{`(${item.diets.join(', ')})`}</span>
+                )}
                 <span className="ml-1">{item.price}</span>
               </div>
               <div className="italic font-light">

@@ -35,7 +35,7 @@ class Scraper {
     log.info('Scraping all menus (force=%s)', force)
     const [year, week] = getYearAndWeek()
 
-    const enabledVenues = scrapers.filter(({ enabled }) => enabled)
+    const enabledVenues = scrapers.filter(({ isEnabled }) => isEnabled())
     const scrapePromises = enabledVenues.map(
       (v) => async () => this.scrapeMenu(year, week, v, force)
     )

@@ -36,6 +36,7 @@ export type MenuItem = {
   name: string
   price?: string
   description?: string
+  diets?: string[]
 }
 
 let menus: Menus = { year: getIsoYear(), week: getIsoWeek(), menus: [] }

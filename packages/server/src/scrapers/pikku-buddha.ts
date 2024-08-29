@@ -3,6 +3,7 @@ import logger from '../logger.js'
 import { type MenuItem } from '../menu-service.js'
 import {
   clampWeekMenu,
+  isEmpty,
   loadPage,
   nameAndPriceParser,
   processPromises,
@@ -11,13 +12,15 @@ import {
 
 const log = logger('scraper:pikku-buddha')
 
-const parseNameAndPrice = nameAndPriceParser(/^\d\. *(.+) +(\d+(?:,\d+)?) *€$/)
+const parseNameAndPrice = nameAndPriceParser(
+  /^\d\.[\s\u00A0]*(\D+?)[\s\u00A0]*(\d+(?:,\d+)?)[\s\u00A0]*€?$/
+)
 
 const paths = ['maanantai', 'tiistai', 'keskiviikko', 'torstai', 'perjantai']
 
 const scrape: ScrapeFunction = async (url) => {
   log.info('Starting scrape')
-  const weekMenuPromises = paths.map(async (weekDay) => {
+  const weekMenuPromises = paths.map(async (weekDay, i) => {
     const dayUrl = `${url}/${weekDay}`
     log.info('Loading lunch menu page from URL %s', dayUrl)
     const $ = await loadPage(dayUrl)
@@ -25,24 +28,46 @@ const scrape: ScrapeFunction = async (url) => {
     const menuItems = $('h1')
       .siblings('p')
       .slice(2)
-      .map((_, el) => {
+      .map((j, el) => {
         const text = $(el).text()
-        const nameAndPrice = $('strong', el).text()
 
-        const description = sanitizeString(
-          text.substring(
-            nameAndPrice.length,
-            text.indexOf('.', nameAndPrice.length) + 1
+        if (isEmpty(text)) {
+          return null
+        }
+
+        const nameAndPrice = $('strong,span', el).text()
+
+        if (isEmpty(nameAndPrice)) {
+          return null
+        }
+
+        let description = undefined
+
+        const periodIndex = text.indexOf('.', nameAndPrice.length)
+
+        if (periodIndex != -1) {
+          description = sanitizeString(
+            text.substring(nameAndPrice.length, periodIndex + 1)
           )
-        )
+        }
 
-        const [name, price] = parseNameAndPrice(sanitizeString(nameAndPrice))
+        try {
+          const [name, price] = parseNameAndPrice(sanitizeString(nameAndPrice))
 
-        return {
-          name,
-          price,
-          description,
-        } satisfies MenuItem
+          return {
+            name,
+            price,
+            description,
+          } satisfies MenuItem
+        } catch (err) {
+          log.warn(
+            err,
+            'Failed to process day menu item (day %d, item %d)',
+            i,
+            j
+          )
+          return null
+        }
       })
 
     return menuItems.toArray()

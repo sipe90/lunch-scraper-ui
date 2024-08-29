@@ -24,10 +24,12 @@ const scrape: ScrapeFunction = async (url) => {
         .hasNotText('päivän pizza')
         .map((_, el) => {
           const name = $('td', el).eq(0).text()
+          const diets = $('td', el).eq(1).text()
           const price = $('td', el).eq(2).text()
 
           return {
             name,
+            diets: diets.length ? [diets] : undefined,
             price,
           } satisfies MenuItem
         })

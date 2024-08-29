@@ -3,6 +3,8 @@ import express from 'express'
 import Graceful from '@ladjs/graceful'
 import { Cron } from 'croner'
 
+import 'dotenv/config'
+
 import logger from './logger.js'
 import { getMenus, saveMenus } from './menu-service.js'
 import Scraper from './scrape-service.js'

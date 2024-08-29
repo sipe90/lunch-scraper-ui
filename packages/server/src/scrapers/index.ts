@@ -10,18 +10,21 @@ import zapata from './zapata.js'
 
 export type Venue = {
   id: string
-  enabled: boolean
   name: string
   url: string
   weeklyOnly: boolean
   buffet: boolean
   scraper: ScrapeFunction
+  isEnabled(): boolean
 }
+
+const isVenueEnabled = (id: string) => () =>
+  process.env[`SCRAPER_${id}_DISABLE`]?.toLocaleLowerCase() !== 'true'
 
 const venues: Venue[] = [
   {
     id: 'bistro',
-    enabled: true,
+    isEnabled: isVenueEnabled('BISTRO'),
     name: 'Bistro En Place',
     url: 'https://www.bistroenplace.fi',
     weeklyOnly: true,
@@ -30,7 +33,7 @@ const venues: Venue[] = [
   },
   {
     id: 'bumma',
-    enabled: true,
+    isEnabled: isVenueEnabled('BUMMA'),
     name: 'Bumma',
     url: 'https://www.bumma.fi/lounas',
     weeklyOnly: false,
@@ -39,7 +42,7 @@ const venues: Venue[] = [
   },
   {
     id: 'food-and-co',
-    enabled: true,
+    isEnabled: isVenueEnabled('FOOD-AND-CO'),
     name: 'Food & Co Järvenpää-talo',
     url: 'https://www.compass-group.fi/ravintolat-ja-ruokalistat/foodco/kaupungit/jarvenpaa/jarvenpaa-talo/',
     weeklyOnly: false,
@@ -48,7 +51,7 @@ const venues: Venue[] = [
   },
   {
     id: 'zapata',
-    enabled: true,
+    isEnabled: isVenueEnabled('ZAPATA'),
     name: 'Cantina Viva Zapata',
     url: 'https://cantinazapata.com/lounas',
     weeklyOnly: false,
@@ -57,7 +60,7 @@ const venues: Venue[] = [
   },
   {
     id: 'huili',
-    enabled: true,
+    isEnabled: isVenueEnabled('HUILI'),
     name: 'Huili',
     url: 'https://www.ravintolahuili.fi/lounas',
     weeklyOnly: false,
@@ -66,7 +69,7 @@ const venues: Venue[] = [
   },
   {
     id: 'huvila',
-    enabled: true,
+    isEnabled: isVenueEnabled('HUVILA'),
     name: 'Huvila',
     url: 'https://www.huvilassa.fi/lounas',
     weeklyOnly: false,
@@ -75,7 +78,7 @@ const venues: Venue[] = [
   },
   {
     id: 'pikku-buddha',
-    enabled: true,
+    isEnabled: isVenueEnabled('PIKKU-BUDDHA'),
     name: 'Pikku Buddha',
     url: 'https://www.ravintolapikkubuddha.com/lounas',
     weeklyOnly: false,

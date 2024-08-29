@@ -6,7 +6,12 @@ import {
   getWeekdayDates,
 } from '../util/time-util.js'
 import { type MenuItem } from '../menu-service.js'
-import { clampWeekMenu, loadPage, sanitizeString } from '../util/scrape-util.js'
+import {
+  clampWeekMenu,
+  loadPage,
+  parseDiets,
+  sanitizeString,
+} from '../util/scrape-util.js'
 
 const log = logger('scraper:huili')
 
@@ -40,8 +45,9 @@ const scrape: ScrapeFunction = async (url) => {
       const menuItems = $('li', menuSection).map((k, menuItem) => {
         const name = sanitizeString($(menuItem).text())
         const price = prices[j + k]
+        const diets = parseDiets(name)
 
-        return { name, price } satisfies MenuItem
+        return { name, price, diets } satisfies MenuItem
       })
 
       return menuItems.toArray()
