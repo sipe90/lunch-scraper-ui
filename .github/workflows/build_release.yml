@@ -8,9 +8,36 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+      - name: Install
+        uses: borales/actions-yarn@v5
+        with:
+          cmd: install --frozen-lockfile
+      - name: Build
+        uses: borales/actions-yarn@v5
+        with:
+          cmd: build
+      - name: Archive application bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-bundle
+          path: dist
+          if-no-files-found: error
+  image:
+    runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: app-bundle
+          path: dist
       - name: Build image from tag
         uses: aevea/action-kaniko@v0.11.0
         with:
