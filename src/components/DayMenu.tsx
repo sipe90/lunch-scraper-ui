@@ -3,20 +3,20 @@ import { type MenuItem } from '../types'
 
 type DayMenuProps = {
   title?: string
-  menu: MenuItem[]
+  items: MenuItem[]
 }
 
-const DayMenu: FC<DayMenuProps> = ({ title, menu }) => {
+const DayMenu: FC<DayMenuProps> = ({ title, items }) => {
   return (
     <div className="px-4 flex-1">
       {title && <h3 className="text-2xl text-green-dark">{title}</h3>}
       <div className="mt-1 flex flex-col">
         <ul className="list-disc">
-          {menu.map((item, idx) => (
+          {items.map((item, idx) => (
             <li key={idx} className="mt-1">
               <div className="font-medium">
                 <span>{item.name}</span>
-                <span className="ml-1">{item.price}</span>
+                {item.price && <span className="ml-1">{item.price}€</span>}
               </div>
               <div className="italic font-light">
                 <span>{item.description}</span>
