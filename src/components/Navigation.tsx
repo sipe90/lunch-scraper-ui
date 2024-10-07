@@ -19,7 +19,7 @@ const NavBar: FC = () => {
         onSelect={setSelectedDay}
       />
       <DayLink
-        weekday={Weekday.WEDNESSDAY}
+        weekday={Weekday.WEDNESDAY}
         selectedDay={selectedDay}
         onSelect={setSelectedDay}
       />
@@ -58,7 +58,7 @@ const DayLink: FC<DayLinkProps> = ({ weekday, selectedDay, onSelect }) => {
             "before:content-['Ti'] lg:before:content-['Tiistai']":
               weekday === Weekday.TUESDAY,
             "before:content-['Ke'] lg:before:content-['Keskiviikko']":
-              weekday === Weekday.WEDNESSDAY,
+              weekday === Weekday.WEDNESDAY,
             "before:content-['To'] lg:before:content-['Torstai']":
               weekday === Weekday.THURSDAY,
             "before:content-['Pe'] lg:before:content-['Perjantai']":

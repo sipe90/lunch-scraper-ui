@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { type FC } from 'react'
-import { type Menus } from './types'
+import { type RestaurantMenus } from './types'
 import Navigation from './components/Navigation'
 import DayMenus from './views/DayMenus'
 import Header from './components/Header'
@@ -8,19 +8,19 @@ import { MenuProvider } from './app-context'
 import Footer from './components/Footer'
 
 const App: FC = () => {
-  const [menus, setMenus] = useState<Menus | undefined>(undefined)
+  const [menus, setMenus] = useState<RestaurantMenus[] | undefined>(undefined)
 
   useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}api/menus`)
+    fetch(`${import.meta.env.BASE_URL}api/menus/jarvenpaa`)
       .then(async (res) => res.json())
-      .then((m: Menus) => {
+      .then((m: RestaurantMenus[]) => {
         setMenus(m)
       })
       .catch(console.error)
   }, [])
 
   return (
-    <MenuProvider allMenus={menus} loading={menus === undefined}>
+    <MenuProvider menus={menus} loading={menus === undefined}>
       <div className="md:px-6 max-w-[1440px] mx-auto">
         <header className="px-4 md:px-20 py-2 md:py-6 border-2 border-gray-50">
           <Header />
