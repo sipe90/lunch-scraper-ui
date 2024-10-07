@@ -1,5 +1,0 @@
-{
-    "eslint.experimental.useFlatConfig": true,
-    "eslint.useESLintClass": true,
-    "eslint.workingDirectories": ["packages/frontend", "packages/server"]
-}
