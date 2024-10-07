@@ -1,8 +1,8 @@
 {
-  "name": "jake-lunch",
+  "name": "lunch-scraper-ui",
   "version": "0.10.0",
   "private": true,
-  "repository": "git@github.com:sipe90/jake-lunch.git",
+  "repository": "git@github.com:sipe90/lunch-scraper-ui.git",
   "author": "sipe90",
   "type": "module",
   "scripts": {
