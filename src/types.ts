@@ -1,6 +1,7 @@
-import { Weekday } from "./const"
+/* eslint-disable @typescript-eslint/ban-types */
+import { type Weekday } from "./const"
 
-export interface RestaurantMenus {
+export type RestaurantMenus = {
   name: string
   url: string
   location: string | null
@@ -13,14 +14,14 @@ type WeekdayMenus = {
   [key in Weekday]: MenuItem[]
 }
 
-export interface DailyMenus extends WeekdayMenus {
+export type DailyMenus = {
   menu_type: MenuType
   buffet_price: number | null
-}
+} & WeekdayMenus
 
 export type MenuType = 'a_la_carte' | 'buffet'
 
-export interface MenuItem {
+export type MenuItem = {
   name: string
   description: string | null
   price: number | null
