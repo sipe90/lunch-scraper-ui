@@ -53,15 +53,15 @@ const DayLink: FC<DayLinkProps> = ({ weekday, selectedDay, onSelect }) => {
           {
             'bg-slate-50 text-green-light': isSelected,
             'bg-slate-200 text-green': !isSelected,
-            "before:content-['Ma'] lg:before:content-['Maanantai']":
+            "before:content-['Mo'] md:before:content-['Mon'] xl:before:content-['Monday']":
               weekday === Weekday.MONDAY,
-            "before:content-['Ti'] lg:before:content-['Tiistai']":
+            "before:content-['Tu'] md:before:content-['Tue'] xl:before:content-['Tuesday']":
               weekday === Weekday.TUESDAY,
-            "before:content-['Ke'] lg:before:content-['Keskiviikko']":
+            "before:content-['We'] md:before:content-['Wed'] xl:before:content-['Wednesday']":
               weekday === Weekday.WEDNESDAY,
-            "before:content-['To'] lg:before:content-['Torstai']":
+            "before:content-['Th'] md:before:content-['Thu'] xl:before:content-['Thursday']":
               weekday === Weekday.THURSDAY,
-            "before:content-['Pe'] lg:before:content-['Perjantai']":
+            "before:content-['Fr'] md:before:content-['Fri'] xl:before:content-['Friday']":
               weekday === Weekday.FRIDAY,
           }
         )}
