@@ -1,11 +1,13 @@
 import { type FC } from 'react'
 import clsx from 'clsx'
 import { Weekday } from '../const'
-import { useAppContext } from '../app-context'
 
-const NavBar: FC = () => {
-  const { selectedDay, setSelectedDay } = useAppContext()
+type Props = {
+  selectedDay?: Weekday
+  setSelectedDay: (w: Weekday) => void
+}
 
+const MenuNavigation: FC<Props> = ({ selectedDay, setSelectedDay }) => {
   return (
     <ul className="flex gap-1 flex-row text-xl font-semibold drop-shadow-md">
       <DayLink
@@ -39,7 +41,7 @@ const NavBar: FC = () => {
 
 type DayLinkProps = {
   weekday: Weekday
-  selectedDay: Weekday
+  selectedDay?: Weekday
   onSelect: (selected: Weekday) => void
 }
 
@@ -73,4 +75,4 @@ const DayLink: FC<DayLinkProps> = ({ weekday, selectedDay, onSelect }) => {
   )
 }
 
-export default NavBar
+export default MenuNavigation

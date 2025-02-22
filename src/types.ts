@@ -1,9 +1,14 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { type Weekday } from './const'
 
-export type Location = {
-  name: string
+export type Menus = {
+  lunchArea: LunchArea
   restaurants: Restaurant[]
+}
+
+export type LunchArea = {
+  id: string
+  name: string
 }
 
 export type Restaurant = {

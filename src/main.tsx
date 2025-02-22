@@ -6,7 +6,8 @@ import { setDefaultOptions } from 'date-fns'
 
 import './index.css'
 import Root from './routes/Root'
-import DayMenus from './routes/DayMenus'
+import Menus from './routes/Menus'
+import LunchAreas from './routes/LunchAreas'
 
 setDefaultOptions({ locale: fi, weekStartsOn: 1 })
 
@@ -14,20 +15,26 @@ const router = createBrowserRouter(
   [
     {
       path: '/',
-      element: <Navigate to="/jarvenpaa" replace={true} />,
-    },
-    {
-      id: 'location',
-      path: '/:location',
       element: <Root />,
-      loader: ({ params }) =>
-        fetch(`${import.meta.env.BASE_URL}api/menus/${params.location}`),
       children: [
         {
           path: '',
-          element: <DayMenus />,
+          element: <Navigate to="/menus" replace={true} />
         },
-      ],
+        {
+          id: 'areas',
+          path: '/menus',
+          loader: () => fetch(`${import.meta.env.BASE_URL}api/areas`),
+          element: <LunchAreas />,
+        },
+        {
+          id: 'menus',
+          path: '/menus/:areaId',
+          loader: ({ params }) =>
+            fetch(`${import.meta.env.BASE_URL}api/areas/${params.areaId}`),
+          element: <Menus />,
+        },
+      ]
     },
   ],
   {
