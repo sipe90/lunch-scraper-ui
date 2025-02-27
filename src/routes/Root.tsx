@@ -1,7 +1,7 @@
 import { type FC } from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-import { Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router'
 
 const Root: FC = () => {
   return (
@@ -9,7 +9,7 @@ const Root: FC = () => {
       <header className="px-4 md:px-20 py-2 md:py-6 border-2 border-gray-50">
         <Header />
       </header>
-      <div className="px-4 md:px-20 py-4 md:py-8 bg-backgound bg-contain">
+      <div className="px-4 md:px-20 py-4 md:py-8 bg-[url('/assets/bg.jpg')] bg-contain">
         <main>
           <Outlet />
         </main>

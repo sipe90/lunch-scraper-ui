@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Link, useRouteLoaderData } from 'react-router-dom'
+import { Link, useRouteLoaderData } from 'react-router'
 import { LunchArea } from '../types'
 import Panel from '../components/Panel'
 

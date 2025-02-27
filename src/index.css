@@ -1,3 +1,7 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+    --color-green: #426B1F;
+    --color-green-dark: #315115;
+    --color-green-light: #63BD16;
+}

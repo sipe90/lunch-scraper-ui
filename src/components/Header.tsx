@@ -1,6 +1,6 @@
 import { useMemo, type FC } from 'react'
 import { getWeekDateRangeString, getYearAndWeek } from '../time-util'
-import { useRouteLoaderData } from 'react-router-dom'
+import { useRouteLoaderData } from 'react-router'
 import { Menus } from '../types'
 
 

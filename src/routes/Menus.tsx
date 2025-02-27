@@ -1,6 +1,6 @@
 import { useEffect, useState, type FC } from 'react'
 import DayMenu from '../components/DayMenu'
-import { useRouteLoaderData } from 'react-router-dom'
+import { useRouteLoaderData } from 'react-router'
 import { type Menus } from '../types'
 import { Weekday } from '../const'
 import { getDayOfWeek } from '../time-util'
