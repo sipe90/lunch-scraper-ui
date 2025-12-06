@@ -1,10 +1,12 @@
+import { useRouterState } from '@tanstack/react-router'
 import { type FC, useMemo } from 'react'
-import { useRouteLoaderData } from 'react-router'
 import { getWeekDateRangeString, getYearAndWeek } from '../time-util'
-import type { Menus } from '../types'
 
 const Header: FC = () => {
-  const location: Menus | undefined = useRouteLoaderData('menus')
+  const menusMatch = useRouterState({
+    select: (state) => state.matches.find((match) => match.routeId === '/menus/$areaId'),
+  })
+  const location = menusMatch?.loaderData
 
   const weekDateRange = useMemo(() => {
     const [year, week] = getYearAndWeek()
