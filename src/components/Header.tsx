@@ -1,13 +1,12 @@
-import { useMemo, type FC } from 'react'
-import { getWeekDateRangeString, getYearAndWeek } from '../time-util'
+import { type FC, useMemo } from 'react'
 import { useRouteLoaderData } from 'react-router'
-import { Menus } from '../types'
-
+import { getWeekDateRangeString, getYearAndWeek } from '../time-util'
+import type { Menus } from '../types'
 
 const Header: FC = () => {
-  const location = useRouteLoaderData('menus') as Menus | undefined
+  const location: Menus | undefined = useRouteLoaderData('menus')
 
-  const weekDateRange = useMemo(() => { 
+  const weekDateRange = useMemo(() => {
     const [year, week] = getYearAndWeek()
     return getWeekDateRangeString(year, week)
   }, [])
@@ -17,9 +16,7 @@ const Header: FC = () => {
       {location ? (
         <>
           <span>{location.lunchArea.name} lunches in week </span>
-          <span className="text-nowrap">
-            {weekDateRange}
-          </span>
+          <span className="text-nowrap">{weekDateRange}</span>
         </>
       ) : (
         <span>LunchScraper</span>

@@ -1,0 +1,17 @@
+{
+  "plugins": ["unicorn", "typescript", "oxc", "react"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "pedantic": "off",
+    "perf": "warn",
+    "style": "off",
+    "restriction": "warn"
+  },
+  "rules": {
+    "react-in-jsx-scope": "off",
+    "jsx-filename-extension": ["error", { "extensions": [".tsx"] }],
+    "no-optional-chaining": "off",
+    "no-async-await": "off",
+  }
+}

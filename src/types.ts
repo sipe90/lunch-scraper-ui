@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-types */
-import { type Weekday } from './const'
+export type Weekday = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday'
 
 export type Menus = {
   lunchArea: LunchArea
