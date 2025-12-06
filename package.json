@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build --base=/lunch/",
+    "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
     "postversion": "git push && git push --tags"
