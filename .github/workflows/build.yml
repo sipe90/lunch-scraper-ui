@@ -10,17 +10,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
       - name: Set up NodeJS
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '20'
-          cache: 'yarn'
-      - name: Install
-        uses: borales/actions-yarn@v5
-        with:
-          cmd: install --frozen-lockfile
+          node-version: '24'
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install 
       - name: Build
-        uses: borales/actions-yarn@v5
-        with:
-          cmd: build
+        run: pnpm build
