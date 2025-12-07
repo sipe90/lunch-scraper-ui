@@ -6,12 +6,11 @@
     "pedantic": "off",
     "perf": "warn",
     "style": "off",
-    "restriction": "warn"
+    "restriction": "off"
   },
   "rules": {
     "react-in-jsx-scope": "off",
     "jsx-filename-extension": ["error", { "extensions": [".tsx"] }],
-    "no-optional-chaining": "off",
-    "no-async-await": "off",
+    "unbound-method": "off"
   }
 }

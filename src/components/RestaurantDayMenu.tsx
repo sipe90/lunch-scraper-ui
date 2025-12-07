@@ -1,14 +1,25 @@
 import type { FC } from 'react'
+import { type ActiveFilters, itemMatchesFilters } from '../filters'
 import type { Restaurant, Weekday } from '../types'
 import Menu from './Menu'
 
 type RestaurantDayMenuProps = {
   restaurant: Restaurant
   selectedDay: Weekday
+  filters: ActiveFilters
 }
 
-const RestaurantDayMenu: FC<RestaurantDayMenuProps> = ({ restaurant, selectedDay }) => {
-  const dailyMenu = restaurant.dailyMenus?.[selectedDay]
+const RestaurantDayMenu: FC<RestaurantDayMenuProps> = ({ restaurant, selectedDay, filters }) => {
+  const dayMenu = restaurant.dailyMenus?.[selectedDay]
+
+  if (!dayMenu) {
+    return null
+  }
+
+  const visibleItems = dayMenu.items.filter((item) => itemMatchesFilters(item.tags, filters))
+  if (!visibleItems.length) {
+    return null
+  }
 
   return (
     <article key={restaurant.name} className="flex-1 md:min-w-[400px]">
@@ -17,23 +28,17 @@ const RestaurantDayMenu: FC<RestaurantDayMenuProps> = ({ restaurant, selectedDay
           {restaurant.name}
         </a>
       </h2>
-      {dailyMenu ? (
-        <>
-          {dailyMenu.lunchtimeStart && dailyMenu.lunchtimeEnd && (
-            <h3 className="mt-2 text-xl">
-              Lunchtime: {dailyMenu.lunchtimeStart} - {dailyMenu.lunchtimeEnd}
-            </h3>
-          )}
-          {dailyMenu.menuType === 'buffet' && dailyMenu.buffetPrice && (
-            <h3 className="mt-2 text-xl">Buffet: {dailyMenu.buffetPrice}€</h3>
-          )}
-          <div className="mt-2 flex flex-wrap">
-            <Menu items={dailyMenu.items} />
-          </div>
-        </>
-      ) : (
-        <div className="mt-2">The daily menu is not available</div>
+      {dayMenu.lunchtimeStart && dayMenu.lunchtimeEnd && (
+        <h3 className="mt-2 text-xl">
+          Lunchtime: {dayMenu.lunchtimeStart} - {dayMenu.lunchtimeEnd}
+        </h3>
       )}
+      {dayMenu.menuType === 'buffet' && dayMenu.buffetPrice && (
+        <h3 className="mt-2 text-xl">Buffet: {dayMenu.buffetPrice}€</h3>
+      )}
+      <div className="mt-2 flex flex-wrap">
+        <Menu items={visibleItems} />
+      </div>
     </article>
   )
 }
