@@ -1,12 +1,12 @@
 import type { FC } from 'react'
 import type { MenuItem } from '../types'
 
-type DayMenuProps = {
+type MenuProps = {
   title?: string
   items: MenuItem[]
 }
 
-const DayMenu: FC<DayMenuProps> = ({ title, items }) => {
+const Menu: FC<MenuProps> = ({ title, items }) => {
   return (
     <div className="px-4 flex-1">
       {title && <h3 className="text-2xl text-green-dark">{title}</h3>}
@@ -29,4 +29,4 @@ const DayMenu: FC<DayMenuProps> = ({ title, items }) => {
   )
 }
 
-export default DayMenu
+export default Menu

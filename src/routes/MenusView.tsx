@@ -1,8 +1,8 @@
 import { useLoaderData } from '@tanstack/react-router'
 import { type FC, useEffect, useState } from 'react'
-import DayMenu from '../components/DayMenu'
 import MenuNavigation from '../components/MenuNavigation'
 import Panel from '../components/Panel'
+import RestaurantDayMenu from '../components/RestaurantDayMenu'
 import { getDayOfWeek } from '../time-util'
 import type { Weekday } from '../types'
 
@@ -39,25 +39,7 @@ const MenusView: FC = () => {
       <Panel roundedTop={false} className="flex gap-4 flex-col md:flex-row md:flex-wrap min-h-[800px]">
         {selectedDay &&
           menus.restaurants.map((restaurant) => (
-            <article key={restaurant.name} className="flex-1 md:min-w-[400px]">
-              <h2 className="text-xl md:text-3xl text-green underline">
-                <a href={restaurant.url} target="_blank" rel="noreferrer">
-                  {restaurant.name}
-                </a>
-              </h2>
-              {restaurant.dailyMenus?.[selectedDay].length ? (
-                <>
-                  {restaurant.dailyMenus.menu_type === 'buffet' && restaurant.dailyMenus.buffet_price && (
-                    <h3 className="ml-4 mt-2 text-xl">Buffet: {restaurant.dailyMenus.buffet_price}€</h3>
-                  )}
-                  <div className="mt-2 flex flex-wrap">
-                    <DayMenu items={restaurant.dailyMenus[selectedDay]} />
-                  </div>
-                </>
-              ) : (
-                <div className="mt-2">The daily menu is not available</div>
-              )}
-            </article>
+            <RestaurantDayMenu key={restaurant.name} restaurant={restaurant} selectedDay={selectedDay} />
           ))}
       </Panel>
     </>
