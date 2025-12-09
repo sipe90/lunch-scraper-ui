@@ -1,22 +1,42 @@
 import type { FC } from 'react'
-import type { ActiveFilters } from '../filters'
-import { getAllActiveTags } from '../filters'
-import type { MenuTag } from '../types'
+import * as R from 'remeda'
+import type { ActiveFilters, FilterGroup } from '../filters'
+import type { MenuTag, MenuTagsByType } from '../types'
+
+type TagTuple = { [K in FilterGroup]: [K, ActiveFilters[K][number]] }[FilterGroup]
 
 type Props = {
+  allTags: MenuTagsByType
   filters: ActiveFilters
-  onToggleTag(tag: MenuTag): void
+  onToggleTag(type: FilterGroup, tag: MenuTag): void
   onClear(): void
   expanded: boolean
   onToggleExpanded(): void
 }
 
-const QUICK_FILTER_TAGS: MenuTag[] = ['vegan', 'vegetarian', 'gluten_free', 'dairy_free']
+const QUICK_FILTER_TAGS: TagTuple[] = [
+  ['diet', 'vegan'],
+  ['diet', 'vegetarian'],
+  ['allergen', 'glutenFree'],
+  ['allergen', 'dairyFree'],
+]
 
-const humanLabel = (tag: MenuTag) => tag.replace('_', ' ')
+const humanLabel = (tag: MenuTag) => tag.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase()
 
-const FilterChipsBar: FC<Props> = ({ filters, onToggleTag, onClear, expanded, onToggleExpanded }) => {
-  const activeTags = getAllActiveTags(filters)
+const FilterChipsBar: FC<Props> = ({ allTags, filters, onToggleTag, onClear, expanded, onToggleExpanded }) => {
+  const activeTagTuples: TagTuple[] = R.pipe(
+    filters,
+    R.entries(),
+    // oxlint-disable-next-line no-unsafe-type-assertion
+    R.flatMap(([type, tags]) => tags.map((tag) => [type, tag] as TagTuple)),
+  )
+
+  const quickFilterTagTuples = QUICK_FILTER_TAGS.filter(([type, tag]) => {
+    const tagsForGroup: MenuTag[] = allTags[type]
+    const available = tagsForGroup.includes(tag)
+    const alreadyActive = activeTagTuples.some(([, active]) => active === tag)
+    return available && !alreadyActive
+  })
 
   return (
     <div className="sticky top-0 z-10 bg-white border-b px-3 py-2">
@@ -24,21 +44,21 @@ const FilterChipsBar: FC<Props> = ({ filters, onToggleTag, onClear, expanded, on
         <span className="text-sm text-gray-500 shrink-0">Filters:</span>
         <div className="flex-1 overflow-x-auto py-2">
           <div className="flex gap-2 w-max">
-            {activeTags.map((tag) => (
+            {activeTagTuples.map(([type, tag]) => (
               <button
-                key={tag}
+                key={`${type}-${tag}`}
                 className="shrink-0 rounded-full bg-green/10 text-green px-3 py-1 text-sm flex items-center gap-1"
-                onClick={() => onToggleTag(tag)}
+                onClick={() => onToggleTag(type, tag)}
               >
                 {humanLabel(tag)} ✕
               </button>
             ))}
 
-            {QUICK_FILTER_TAGS.filter((t) => !activeTags.includes(t)).map((tag) => (
+            {quickFilterTagTuples.map(([type, tag]) => (
               <button
-                key={tag}
+                key={`${type}-${tag}`}
                 className="shrink-0 rounded-full bg-gray-100 px-3 py-1 text-sm"
-                onClick={() => onToggleTag(tag)}
+                onClick={() => onToggleTag(type, tag)}
               >
                 {humanLabel(tag)}
               </button>
@@ -49,7 +69,7 @@ const FilterChipsBar: FC<Props> = ({ filters, onToggleTag, onClear, expanded, on
           {expanded ? 'Hide' : 'More'}
           <span className={`inline-block text-xs transition-transform ${expanded ? 'rotate-180' : ''}`}>▾</span>
         </button>
-        {activeTags.length > 0 && (
+        {activeTagTuples.length > 0 && (
           <button className="shrink-0 text-sm text-gray-500 pl-1" onClick={onClear}>
             Clear
           </button>

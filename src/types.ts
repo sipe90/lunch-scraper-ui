@@ -3,6 +3,7 @@ export type Weekday = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday'
 export type Menus = {
   lunchArea: LunchArea
   restaurants: Restaurant[]
+  tags: MenuTagsByType
 }
 
 export type LunchArea = {
@@ -15,6 +16,14 @@ export type Restaurant = {
   url: string
   location: string | null
   dailyMenus: DailyMenus | null
+}
+
+export type MenuTagsByType = {
+  diet: DietTag[]
+  allergen: AllergenTag[]
+  dishType: DishTypeTag[]
+  cuisine: CuisineTag[]
+  protein: ProteinTag[]
 }
 
 type DailyMenus = {
@@ -34,25 +43,22 @@ export type MenuItem = {
   name: string
   description: string | null
   price: number | null
-  tags: MenuTag[]
+  tags: MenuTagsByType
 }
 
-export type MenuTag =
-  // diet
-  | 'vegetarian'
-  | 'vegan'
-  | 'pescatarian'
-  | 'halal'
-  // allergens
-  | 'gluten_free'
-  | 'lactose_free'
-  | 'dairy_free'
-  | 'nut_free'
-  | 'egg_free'
-  | 'soy_free'
-  | 'fish_free'
-  | 'shellfish_free'
-  // dish type
+export type DietTag = 'vegetarian' | 'vegan' | 'pescatarian' | 'halal'
+
+export type AllergenTag =
+  | 'glutenFree'
+  | 'lactoseFree'
+  | 'dairyFree'
+  | 'nutFree'
+  | 'eggFree'
+  | 'soyFree'
+  | 'fishFree'
+  | 'shellfishFree'
+
+export type DishTypeTag =
   | 'soup'
   | 'salad'
   | 'burger'
@@ -60,14 +66,15 @@ export type MenuTag =
   | 'pasta'
   | 'curry'
   | 'stew'
-  | 'rice_bowl'
+  | 'riceBowl'
   | 'taco'
   | 'wrap'
   | 'sandwich'
   | 'kebab'
   | 'wings'
   | 'sushi'
-  // cuisine
+
+export type CuisineTag =
   | 'italian'
   | 'french'
   | 'nordic'
@@ -79,7 +86,8 @@ export type MenuTag =
   | 'chinese'
   | 'japanese'
   | 'korean'
-  // protein
+
+export type ProteinTag =
   | 'beef'
   | 'pork'
   | 'chicken'
@@ -91,3 +99,5 @@ export type MenuTag =
   | 'falafel'
   | 'legumes'
   | 'game'
+
+export type MenuTag = DietTag | AllergenTag | DishTypeTag | CuisineTag | ProteinTag

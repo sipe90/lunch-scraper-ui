@@ -5,9 +5,9 @@ import FiltersAccordion from '../components/FiltersAccordion'
 import MenuNavigation from '../components/MenuNavigation'
 import Panel from '../components/Panel'
 import RestaurantDayMenu from '../components/RestaurantDayMenu'
-import { type ActiveFilters, type FilterGroup, TAG_GROUP } from '../filters'
+import { type ActiveFilters } from '../filters'
 import { getDayOfWeek } from '../time-util'
-import type { MenuTag, Weekday } from '../types'
+import type { MenuTag, MenuTagsByType, Weekday } from '../types'
 
 const emptyFilters: ActiveFilters = {
   diet: [],
@@ -30,13 +30,12 @@ const MenusView: FC = () => {
     }
   }, [selectedDay])
 
-  const toggleTag = (tag: MenuTag) => {
+  const toggleTag = (type: keyof MenuTagsByType, tag: MenuTag) => {
     setFilters((prev) => {
-      const group: FilterGroup = TAG_GROUP[tag]
-      const list = prev[group]
+      const list = prev[type]
       const exists = list.includes(tag)
       const updated = exists ? list.filter((t) => t !== tag) : [...list, tag]
-      return { ...prev, [group]: updated }
+      return { ...prev, [type]: updated }
     })
   }
 
@@ -59,6 +58,7 @@ const MenusView: FC = () => {
       </nav>
 
       <FilterChipsBar
+        allTags={menus.tags}
         filters={filters}
         expanded={filtersExpanded}
         onToggleExpanded={() => setFiltersExpanded((v) => !v)}
@@ -72,7 +72,7 @@ const MenusView: FC = () => {
           (filtersExpanded ? 'max-h-[500px]' : 'max-h-0')
         }
       >
-        <FiltersAccordion filters={filters} onToggleTag={toggleTag} />
+        <FiltersAccordion allTags={menus.tags} filters={filters} onToggleTag={toggleTag} />
       </div>
 
       <Panel roundedTop={false} className="flex gap-4 flex-col md:flex-row md:flex-wrap min-h-[800px]">
